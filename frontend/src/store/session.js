@@ -16,7 +16,7 @@ const LOGOUT_USER = 'session/logoutUser';
 /**
  * Set the user state
  * @param { User } user
- * @returns {{ type: string, user: User }}
+ * @returns { { type: string, user: User } }
  */
 export const loginUser = (user) => {
   return {
@@ -27,7 +27,7 @@ export const loginUser = (user) => {
 
 /**
  * Set the user to null on the state
- * @returns {{ type: string }}
+ * @returns { { type: string } }
  */
 export const logoutUser = () => {
   return {
@@ -57,7 +57,7 @@ export const login = (credential, password) => async (dispatch) => {
 
 /**
  * Send a request to the logout endpoint on the backend
- * @returns {{ message: string } | undefined}
+ * @returns { { message: string } | undefined }
  */
 export const logout = () => async (dispatch) => {
   const res = await csrfFetch('/api/session', {
