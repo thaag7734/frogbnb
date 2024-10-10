@@ -72,6 +72,18 @@ export const logout = () => async (dispatch) => {
 }
 
 /**
+ * Hit the GET /api/session endpoint to restore user cookie and set state
+ */
+export const restoreUser = () => async (dispatch) => {
+  const res = await csrfFetch('/api/session');
+  const user = (await res.json()).user;
+
+  dispatch(loginUser(user));
+
+  return res;
+};
+
+/**
  * @typedef { Object } SessionState
  * @property { User | null } user
  */
