@@ -23,10 +23,6 @@ const usersRouter = require('./users.js');
 
   router.use('/spot-images', require('./spot-images.js'));
   
-  router.post('/test', (req, res) => {
-    res.json({ requestBody: req.body });
-  });
-  
   module.exports = router;
 
 /* VARIOUS TESTING ROUTES
