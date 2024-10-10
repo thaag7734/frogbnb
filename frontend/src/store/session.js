@@ -14,6 +14,12 @@ const LOGOUT_USER = 'session/logoutUser';
  */
 
 /**
+ * @typedef { Object } UserWithPassProperties
+ * @property { string } password
+ * @typedef {User & UserWithPassProperties} UserWithPassword
+ */
+
+/**
  * Set the user state
  * @param { User } user
  * @returns { { type: string, user: User } }
@@ -81,6 +87,28 @@ export const restoreUser = () => async (dispatch) => {
   dispatch(loginUser(user));
 
   return res;
+};
+
+/**
+ * Send a request to the signup endpoint on the backend
+ * @param { UserWithPassword } user The user object to sign up
+ * @returns { User } The user object returned from the backend
+ */
+export const signup = (user) => async (dispatch) => {
+  const { username, firstName, lastName, email, password } = user;
+  const response = await csrfFetch("/api/users", {
+    method: "POST",
+    body: JSON.stringify({
+      username,
+      firstName,
+      lastName,
+      email,
+      password
+    })
+  });
+  const data = await response.json();
+  dispatch(loginUser(data.user));
+  return response;
 };
 
 /**
