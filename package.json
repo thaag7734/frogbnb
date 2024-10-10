@@ -1,0 +1,45 @@
+{
+  "name": "airbnb-clone",
+  "version": "1.0.0",
+  "description": "AirBnB clone pair project",
+  "main": "backend/bin/www",
+  "scripts": {
+    "install": "npm --prefix backend install",
+    "sequelize": "npm --prefix backend run sequelize",
+    "start": "npm --prefix backend start",
+    "build": "npm --prefix backend run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thaag7734/airbnb-backend.git"
+  },
+  "author": "Calid Shorter & Tyler Haag",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/thaag7734/airbnb-backend/issues"
+  },
+  "homepage": "https://github.com/thaag7734/airbnb-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "csurf": "^1.10.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-async-errors": "^3.1.1",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "per-env": "^1.0.2",
+    "pg": "^8.13.0",
+    "rxjs": "^7.8.1",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.4.2",
+    "nodemon": "^3.1.5",
+    "sqlite3": "^5.1.7"
+  }
+}
