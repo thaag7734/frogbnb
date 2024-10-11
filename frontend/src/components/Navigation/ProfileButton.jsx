@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IoPersonCircleSharp } from 'react-icons/io5';
 import * as sessionActions from '../../store/session';
+import OpenModalMenuItem from './OpenModalMenuItem.jsx';
+import LoginFormModal from '../LoginFormModal/LoginFormModal.jsx';
+import SignupFormModal from '../SignupFormModal/SignupFormModal.jsx';
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
@@ -11,6 +14,7 @@ function ProfileButton({ user }) {
   const logout = (e) => {
     e.preventDefault();
     dispatch(sessionActions.logout());
+    setShowMenu(false);
   };
 
   useEffect(() => {
@@ -39,12 +43,33 @@ function ProfileButton({ user }) {
         <IoPersonCircleSharp />
       </button>
       <ul className={ulClassName} ref={ulRef}>
-        <li>{user.username}</li>
-        <li>{user.firstName} {user.lastName}</li>
-        <li>{user.email}</li>
-        <li>
-          <button onClick={logout}>Log Out</button>
-        </li>
+        {user ? (
+          <>
+            <li>{user.username}</li>
+            <li>{user.firstName} {user.lastName}</li>
+            <li>{user.email}</li>
+            <li>
+              <button onClick={logout}>Log Out</button>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <OpenModalMenuItem
+                itemText="Log In"
+                onItemClick={() => setShowMenu(false)}
+                modalComponent={<LoginFormModal />}
+              />
+            </li>
+            <li>
+              <OpenModalMenuItem
+                itemText="Sign Up"
+                onItemClick={() => setShowMenu(false)}
+                modalComponent={<SignupFormModal />}
+              />
+            </li>
+          </>
+        )}
       </ul>
     </>
   );
