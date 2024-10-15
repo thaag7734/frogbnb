@@ -14,8 +14,6 @@ function OpenModalMenuItem({
     if (typeof onItemClick === "function") onItemClick();
   };
 
-  console.log('itemText ===>', itemText);
-
   return (
     <li onClick={onClick}>{itemText}</li>
   );

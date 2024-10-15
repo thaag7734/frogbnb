@@ -368,7 +368,7 @@ router.get('/:spotId',
         createdAt: spot.createdAt,
         updatedAt: spot.updatedAt,
         numReviews: parseInt(aggregateStats.numReviews) || 0,
-        avgStarRating: parseFloat(aggregateStats.avgStarRating) || 0,
+        avgStarRating: parseFloat(aggregateStats.avgStarRating) || null,
         SpotImages: spot.SpotImages,
         Owner: {
           id: spot.Owner.id,

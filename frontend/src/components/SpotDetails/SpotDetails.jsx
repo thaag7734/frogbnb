@@ -5,6 +5,11 @@ import { useState, useEffect } from "react";
 import { getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
 import { FaStar } from "react-icons/fa";
 import '../../vlib/date.js';
+import '../../vlib/number.js';
+
+/**
+ * @import { Maybe } from '../../vlib/types.js'
+ */
 
 function SpotDetails() {
   const { id } = useParams();
@@ -18,14 +23,12 @@ function SpotDetails() {
     dispatch(getSpotDetailsThunk(id)).then((spot) => {
       setSpotLoaded(true);
 
-      const previewImage = spot.SpotImages.find((img) => img.preview);
+      const previewImage = spot.SpotImages?.find((img) => img.preview);
       if (previewImage) setPreview(previewImage);
     });
 
     dispatch(getSpotReviewsThunk(id)).then(() => setReviewsLoaded(true));
-  }, [dispatch]);
-
-  console.log('spotLoaded:', spotLoaded, 'spot:', spot);
+  }, [dispatch, id]);
 
   return spotLoaded
     ? spot
@@ -35,29 +38,30 @@ function SpotDetails() {
           <span className="location">{spot.city}, {spot.state}, {spot.country}</span>
           <div className="spot-images">
             <div className="preview">
-              <img src={preview ? preview.url : SpotImages[0].url} />
+              <img src={preview?.url || spot.SpotImages[0].url} />
             </div>
             <div className="img-grid">
               {spot.SpotImages.map((img) => {
                 if (img.preview) return;
 
-                return <img src={img.url} />;
+                return <img key={img.id} src={img.url} />;
               })}
             </div>
           </div>
           <div className="details">
             <div className="desc">
-              <h2>Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</h2>
+              <h2>Hosted by {spot.Owner.firstName + ' ' + spot.Owner.lastName}</h2>
               <p>{spot.description}</p>
             </div>
             <div className="reserve-card">
               <div className="summary">
                 <span className="price">
-                  <span className="money">${parseFloat(spot.price).toFixed(2)}</span>/night
+                  <span className="money">${parseFloat(spot.price).toFixed(2)}</span>
+                  /night
                 </span>
                 <div className="rating-summary">
                   <span className="stars">
-                    <FaStar />{(parseFloat(spot.avgStarRating) || 0).toFixed(1)}
+                    <FaStar />{parseFloat(spot.avgStarRating).toDynamic(2, 1) || 'New'}
                   </span>
                   <span className="dividot">•</span>
                   <span className="review-count">{spot.numReviews} reviews</span>
@@ -70,7 +74,7 @@ function SpotDetails() {
           <div className="review-container">
             <div className="rating-summary lg">
               <span className="stars lg">
-                <FaStar />{(parseFloat(spot.avgStarRating) || 0).toFixed(1)}
+                <FaStar />{parseFloat(spot.avgStarRating).toDynamic(2, 1) || 'New'}
               </span>
               <span className="dividot lg">•</span>
               <span className="review-count lg">{spot.numReviews} reviews</span>
