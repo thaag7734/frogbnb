@@ -11,7 +11,6 @@ function Landing() {
 
   useEffect(() => {
     dispatch(getAllSpotsThunk());
-    console.log('spots ===>', spots);
   }, [dispatch]);
 
   return (

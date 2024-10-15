@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IoPersonCircleSharp } from 'react-icons/io5';
+import { RxHamburgerMenu } from "react-icons/rx";
 import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem.jsx';
 import LoginFormModal from '../LoginFormModal/LoginFormModal.jsx';
@@ -40,6 +41,7 @@ function ProfileButton({ user }) {
   return (
     <>
       <button onClick={handleProfileButtonClick}>
+        <RxHamburgerMenu />
         <IoPersonCircleSharp />
       </button>
       <ul className={ulClassName} ref={ulRef}>

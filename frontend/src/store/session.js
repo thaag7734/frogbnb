@@ -7,10 +7,10 @@ const LOGOUT_USER = 'session/logoutUser';
  * A User object from the backend DB
  * @typedef { Object } User
  * @property { number } id
- * @property { string } email
- * @property { username } string
- * @property { firstName } string
- * @property { lastName } string
+ * @property { string } [email]
+ * @property { string } [username]
+ * @property { string } firstName
+ * @property { string } lastName
  */
 
 /**

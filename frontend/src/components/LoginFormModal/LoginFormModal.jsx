@@ -20,7 +20,7 @@ function LoginFormModal() {
         const data = await res.json();
         if (data?.errors) setErrors(data.errors);
       }
-    );
+      );
   };
 
   return (
@@ -31,6 +31,7 @@ function LoginFormModal() {
           Username or Email
           <input
             type="text"
+            data-testid="credential-input"
             value={credential}
             onChange={(e) => setCredential(e.target.value)}
             required
@@ -40,13 +41,14 @@ function LoginFormModal() {
           Password
           <input
             type="password"
+            data-testid="password-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </label>
         {errors.credential && <p>{errors.credential}</p>}
-        <button type="submit">Log In</button>
+        <button type="submit" data-testid="login-button">Log In</button>
       </form>
     </>
   );
