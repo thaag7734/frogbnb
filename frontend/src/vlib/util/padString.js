@@ -6,7 +6,7 @@
  * @param { 'right' | 'left' } direction Which side of the string to add the padding to
  * @returns { string }
  */
-export const padString = (str, len, char = '0', direction = 'right') => {
+const padString = (str, len, char = '0', direction = 'right') => {
   if (direction === 'right') {
     while (str.length < len) str += char;
 
@@ -21,3 +21,5 @@ export const padString = (str, len, char = '0', direction = 'right') => {
     throw new Error('Argument direction to padString must be either "left" or "right"');
   }
 }
+
+export default padString;

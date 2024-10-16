@@ -1,4 +1,4 @@
-import { padString } from "./util";
+import padString from "../util/padString";
 
 (() => {
   /**
