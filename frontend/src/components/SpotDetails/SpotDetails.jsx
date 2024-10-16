@@ -17,6 +17,7 @@ function SpotDetails() {
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
   const [preview, setPreview] = useState(null);
   const spot = useSelector(state => state.spots[id]);
+  const [displayRating, setDisplayRating] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,6 +30,16 @@ function SpotDetails() {
 
     dispatch(getSpotReviewsThunk(id)).then(() => setReviewsLoaded(true));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (!spot) return setDisplayRating('-.--');
+
+    setDisplayRating(
+      spot?.avgStarRating == null
+        ? 'New'
+        : parseFloat(spot.avgStarRating).toDynamic(2, 1)
+    );
+  }, [spot]);
 
   return spotLoaded
     ? spot
@@ -61,7 +72,7 @@ function SpotDetails() {
                 </span>
                 <div className="rating-summary">
                   <span className="stars">
-                    <FaStar />{parseFloat(spot.avgStarRating).toDynamic(2, 1) || 'New'}
+                    <FaStar />{displayRating}
                   </span>
                   <span className="dividot">•</span>
                   <span className="review-count">{spot.numReviews} reviews</span>
@@ -74,7 +85,7 @@ function SpotDetails() {
           <div className="review-container">
             <div className="rating-summary lg">
               <span className="stars lg">
-                <FaStar />{parseFloat(spot.avgStarRating).toDynamic(2, 1) || 'New'}
+                <FaStar />{displayRating}
               </span>
               <span className="dividot lg">•</span>
               <span className="review-count lg">{spot.numReviews} reviews</span>
@@ -89,9 +100,13 @@ function SpotDetails() {
                           <h3>{review.User.firstName}</h3>
                           <span className="review-date">
                             {
-                              new Date(review.createdAt).getMonthString()
-                              + ' '
-                              + new Date(review.createdAt).getFullYear()
+                              new Date(review.createdAt).toLocaleString(
+                                'default',
+                                {
+                                  month: 'long',
+                                  year: 'numeric',
+                                }
+                              )
                             }
                           </span>
                         </div>

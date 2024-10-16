@@ -163,7 +163,7 @@ const spotsReducer = (state = {}, action) => {
         ...state,
         [action.spotId]: {
           ...state[action.spotId],
-          reviews: action.reviews || [],
+          reviews: action.reviews,
         }
       };
     default:
