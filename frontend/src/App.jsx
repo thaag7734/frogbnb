@@ -5,6 +5,7 @@ import Navigation from './components/Navigation/Navigation.jsx';
 import Landing from './components/Landing/Landing.jsx';
 import SpotDetails from './components/SpotDetails/SpotDetails.jsx';
 import * as sessionActions from './store/session';
+import NewSpotForm from './components/NewSpotForm/NewSpotForm.jsx';
 
 const router = createBrowserRouter([
   {
@@ -12,12 +13,21 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Landing />
+        element: <Landing />,
       },
       {
-        path: '/spot/:id',
-        element: <SpotDetails />
-      },
+        path: '/spots',
+        children: [
+          {
+            path: 'new',
+            element: <NewSpotForm />,
+          },
+          {
+            path: ':id',
+            element: <SpotDetails />,
+          },
+        ],
+      }
     ],
   },
 ]);

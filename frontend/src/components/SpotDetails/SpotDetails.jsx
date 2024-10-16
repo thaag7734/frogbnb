@@ -4,8 +4,8 @@ import './SpotDetails.css';
 import { useState, useEffect } from "react";
 import { getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
 import { FaStar } from "react-icons/fa";
-import '../../vlib/date.js';
-import '../../vlib/number.js';
+import '../../vlib/proto/date.js';
+import '../../vlib/proto/number.js';
 
 /**
  * @import { Maybe } from '../../vlib/types.js'

@@ -18,7 +18,7 @@ function Landing() {
       {
         Object.entries(spots).length
           ? Object.values(spots).map((spot) => (
-            <Link to={`/spot/${spot.id}`}>
+            <Link to={`/spots/${spot.id}`}>
               <SpotCard key={spot.id} spot={spot} />
             </Link>
           ))
