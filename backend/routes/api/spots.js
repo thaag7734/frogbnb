@@ -200,7 +200,9 @@ const validateSpotData = [
   check('description')
     .exists({ checkFalsy: true })
     .isString()
-    .withMessage('Description is required'),
+    .withMessage('Description is required')
+    .isLength({ min: 30 })
+    .withMessage('Description must be a minimum of 30 characters'),
   check('price')
     .exists({ checkFalsy: true })
     .isFloat({ gt: 0 })
@@ -637,7 +639,9 @@ router.post('/:spotId/bookings',
 const validateSpotImage = [
   check('url')
     .exists({ checkFalsy: true })
-    .withMessage('Image url is required'),
+    .withMessage('Image URL is required')
+    .isURL()
+    .withMessage('Image URL must be a valid URL'),
   check('preview')
     .exists()
     .isBoolean()
@@ -674,9 +678,7 @@ router.post('/:spotId/images',
         spotId: spot.id, url, preview
       });
 
-      return res.status(201).json({
-        id: newImage.id, url: newImage.url, preview: newImage.preview
-      });
+      return res.status(201).json(newImage);
 
     } catch (error) {
       next(error)

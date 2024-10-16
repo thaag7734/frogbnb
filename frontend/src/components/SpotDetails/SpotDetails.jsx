@@ -7,10 +7,6 @@ import { FaStar } from "react-icons/fa";
 import '../../vlib/proto/date.js';
 import '../../vlib/proto/number.js';
 
-/**
- * @import { Maybe } from '../../vlib/types.js'
- */
-
 function SpotDetails() {
   const { id } = useParams();
   const [spotLoaded, setSpotLoaded] = useState(false);

@@ -18,8 +18,8 @@ function Landing() {
       {
         Object.entries(spots).length
           ? Object.values(spots).map((spot) => (
-            <Link to={`/spots/${spot.id}`}>
-              <SpotCard key={spot.id} spot={spot} />
+            <Link key={spot.id} to={`/spots/${spot.id}`}>
+              <SpotCard spot={spot} />
             </Link>
           ))
           : <h2>Loading spots...</h2>

@@ -12,9 +12,9 @@ import { Navigate } from "react-router-dom";
  * @param { Spot } spot The spot object
  * @returns { Component }
  */
-function SpotCard({ key, spot }) {
+function SpotCard({ spot }) {
   return (
-    <div className="spot-card" key={key}>
+    <div className="spot-card">
       <div className="preview">
         <img src={spot.previewImage} alt={spot.name} />
       </div>
@@ -22,8 +22,8 @@ function SpotCard({ key, spot }) {
         <span>{spot.city}, {spot.state}</span>
         <span><FaStar /> {/*spot.avgRating.toFixed(1)*/}</span>
       </div>
-      <div class="spot-price">
-        <span class="money">${spot.price}</span><span>/night</span>
+      <div className="spot-price">
+        <span className="money">${spot.price}</span><span>/night</span>
       </div>
     </div>
   );

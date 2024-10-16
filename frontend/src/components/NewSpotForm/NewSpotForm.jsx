@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import '../../vlib/proto/string.js';
+import { createSpotImage, createSpotImageThunk, createSpotThunk, deleteSpotThunk } from "../../store/spots.js";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function NewSpotForm() {
   // java programming simulator
+  const userId = useSelector(state => state.session.user?.id)
   const [country, setCountry] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
@@ -15,6 +19,10 @@ function NewSpotForm() {
   // NOTE the backend needs to be updated to store a max of 5 SpotImages per Spot
   const [images, setImages] = useState(['', '', '', '', '']);
   const [errors, setErrors] = useState({ images: [] });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  let runningErrors = errors;
 
   /**
    * Creates an error element containing containing `msg` as text
@@ -24,6 +32,11 @@ function NewSpotForm() {
     return <span className="error">{msg}</span>
   }
 
+  /**
+   * Validate all form fields and set the errors state. Returns `true` if validations pass,
+   * `false` otherwise
+   * @returns { boolean }
+   */
   const validate = () => {
     const validationErrors = { images: [] };
 
@@ -48,36 +61,114 @@ function NewSpotForm() {
     if (!lng) validationErrors.lng = createError('Longitude is required');
     if (!desc) validationErrors.desc = createError('Description is required');
     if (!title) validationErrors.title = createError('Title is required');
-    if (!price) validationErrors.price = createError('Price is required');
+    if (!price.length) validationErrors.price = createError('Price is required');
     if (!images[0]) validationErrors.images[0] = createError('Preview image is required');
 
-    if (!images[0].endsWithOne(imageUrlSuffixes)) {
+    // TODO make this a loop probably
+    if (images[0] && !images[0].toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[0] = createError('URL must point to an image file');
     }
-    if (!images[1].endsWithOne(imageUrlSuffixes)) {
+    if (images[1] && !images[1].toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[1] = createError('URL must point to an image file');
     }
-    if (!images[2].endsWithOne(imageUrlSuffixes)) {
+    if (images[2] && !images[2].toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[2] = createError('URL must point to an image file');
     }
-    if (!images[3].endsWithOne(imageUrlSuffixes)) {
+    if (images[3] && !images[3].toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[3] = createError('URL must point to an image file');
     }
-    if (!images[4].endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[5] = createError('URL must point to an image file');
+    if (images[4] && !images[4].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+      validationErrors.images[4] = createError('URL must point to an image file');
     }
 
-    setErrors(validationErrors);
+    const floatLat = parseFloat(lat);
+    const floatLng = parseFloat(lng);
 
-    return (Object.values(errors).length === 1 && errors.images.length === 0);
+    if (lat && (Number.isNaN(floatLat) || -90 > floatLat || floatLat > 90)) {
+      validationErrors.lat = createError('Latitude must be a number from -90 to 90');
+    }
+    if (lng && (Number.isNaN(floatLng) || -180 > floatLng || floatLng > 180)) {
+      validationErrors.lng = createError('Longitude must be a number from -180 to 180');
+    }
+
+    const floatPrice = parseFloat(price);
+
+    if (price && (Number.isNaN(floatPrice) || floatPrice <= 0)) {
+      validationErrors.price = createError('Price must be a number greater than zero');
+    }
+
+    console.log('calling regular setErrors');
+    setErrors(validationErrors);
+    runningErrors = validationErrors;
+
+    return (
+      Object.entries(validationErrors).length === 1
+      && validationErrors.images.length === 0
+    );
   };
 
-  useEffect(() => console.log('useEffect with', errors), [errors]);
+  useEffect(() => { }, [errors]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) console.log('bad validate');
+    if (!validate()) return;
+
+    dispatch(
+      createSpotThunk({
+        ownerId: userId,
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name: title,
+        description: desc,
+        price,
+      })
+    ).then((res) => {
+      const promises = [
+        dispatch(createSpotImageThunk(
+          { spotId: res.id, url: images[0], preview: true },
+        ))
+      ];
+
+      for (const img of images.slice(1)) {
+        if (!img) continue;
+        promises.push(
+          dispatch(createSpotImageThunk({ url: img, preview: false }))
+            .catch((eRes) => eRes.json().then((eBody) => {
+              runningErrors = {
+                ...errors,
+                images: [
+                  ...errors.images.slice(0, idx),
+                  createError(eBody.errors.url),
+                  ...errors.images.slice(idx + 1),
+                ],
+              };
+              setErrors(() => runningErrors);
+            }))
+        );
+      }
+
+      Promise.all(promises).then(() => {
+        if (Object.entries(runningErrors).length === 1 && runningErrors.images.length === 0) {
+          navigate(`/spots/${res.id}`);
+        } else {
+          dispatch(deleteSpotThunk(res.id)); // if this fails for any reason, everything breaks
+        }
+      });
+    }).catch((eRes) => eRes.json().then((eBody) => {
+      const backendErrors = { images: [] };
+
+      for (const [err, msg] of Object.entries(eBody.errors)) {
+        backendErrors[err] = createError(msg);
+      }
+
+      setErrors(backendErrors);
+      return;
+    }));
   };
 
   /**
@@ -94,154 +185,152 @@ function NewSpotForm() {
   }
 
   return (
-    <>
+    <main>
       <div className='form-header'>
         <h1>Create a New Spot</h1>
-        <h2>Where&apos;s your place located?</h2>
+        <h2>Where&#39;s your place located?</h2>
         <p>Guests will only get your exact address once they book a reservation</p>
       </div>
       <form onSubmit={handleSubmit}>
-        <label>
-          Country
-          {errors.country}
-          <input
-            type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Street Address
-          {errors.address}
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          City
-          {errors.city}
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          State
-          {errors.state}
-          <input
-            type="text"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Latitude
-          {errors.lat}
-          <input
-            type="text"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Longitude
-          {errors.lng}
-          <input
-            type="text"
-            value={lng}
-            onChange={(e) => setLng(e.target.value)}
-            required
-          />
-        </label>
+        <label htmlFor="country">Country</label>
+        {errors.country}
+        <input
+          type="text"
+          value={country}
+          name="country"
+          onChange={(e) => setCountry(e.target.value)}
+          required
+        />
+        <label htmlFor="address">Street Address</label>
+        {errors.address}
+        <input
+          type="text"
+          value={address}
+          name="address"
+          onChange={(e) => setAddress(e.target.value)}
+          required
+        />
+        <label htmlFor="city">City</label>
+        {errors.city}
+        <input
+          type="text"
+          value={city}
+          name="city"
+          onChange={(e) => setCity(e.target.value)}
+          required
+        />
+        <label htmlFor="state">State</label>
+        {errors.state}
+        <input
+          type="text"
+          value={state}
+          name="state"
+          onChange={(e) => setState(e.target.value)}
+          required
+        />
+        <label htmlFor="lat">Latitude</label>
+        {errors.lat}
+        <input
+          type="text"
+          value={lat}
+          name="lat"
+          onChange={(e) => setLat(e.target.value)}
+          required
+        />
+        <label htmlFor="lng">Longitude</label>
+        {errors.lng}
+        <input
+          type="text"
+          value={lng}
+          name="lng"
+          onChange={(e) => setLng(e.target.value)}
+          required
+        />
         <hr />
-        <label>
-          <div className="label-header">
-            <h3>Describe your place to guests</h3>
-            <span>Mention the best features of your space, any special amenities like fast wifi or parking, and what you love about the neighborhood.</span>
-          </div>
-          <textarea
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            required
-          />
-          {errors.desc}
-        </label>
+        <label htmlFor="desc">Description</label>
+        <h3>Describe your place to guests</h3>
+        <p>Mention the best features of your space, any special amenities like fast wifi or parking, and what you love about the neighborhood.</p>
+        <textarea
+          value={desc}
+          name="desc"
+          onChange={(e) => setDesc(e.target.value)}
+          required
+        />
+        {errors.desc ?? errors.description}
         <hr />
-        <label>
-          <div className="label-header">
-            <h3>Create a title for your spot</h3>
-            <span>Catch guests&apos; attention with a spot title that highlights what makes your place special.</span>
-          </div>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          {errors.title}
-        </label>
+        <label htmlFor="title" className="hidden">Title</label>
+        <h3>Create a title for your spot</h3>
+        <p>Catch guests&#39; attention with a spot title that highlights what makes your place special.</p>
+        <input
+          type="text"
+          value={title}
+          name="title"
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        {errors.title}
         <hr />
-        <label>
-          <div className="label-header">
-            <h3>Set a base price for your spot</h3>
-            <span>Competitive pricing can help your listing stand out and rank higher in search results.</span>
-          </div>
-          <span className="money">$</span>
-          <input
-            type="text"
-            value={price}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          {errors.price}
-        </label>
+        <label htmlFor="price" className="hidden">Price</label>
+        <h3>Set a base price for your spot</h3>
+        <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
+        <span className="money">$</span>
+        <input
+          type="text"
+          value={price}
+          name="price"
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+        {errors.price}
         <hr />
         <div className="image-urls">
           <h3>Liven up your spot with photos</h3>
-          <span>Submit a link to at least one photo to publish your spot.</span>
+          <p>Submit a link to at least one photo to publish your spot.</p>
+          <label htmlFor="preview-image" className="hidden">Preview Image</label>
+          <input
+            type="text"
+            value={images[0]}
+            name="preview-image"
+            onChange={(e) => setImage(0, e.target.value)}
+            required
+          />
+          {errors.images[0]}
+          <label htmlFor="image1" className="hidden">Extra Image 1</label>
+          <input
+            type="text"
+            value={images[1]}
+            name="image1"
+            onChange={(e) => setImage(1, e.target.value)}
+          />
+          {errors.images[1]}
+          <label htmlFor="image2" className="hidden">Extra Image 2</label>
+          <input
+            type="text"
+            value={images[2]}
+            name="image2"
+            onChange={(e) => setImage(2, e.target.value)}
+          />
+          {errors.images[2]}
+          <label htmlFor="image3" className="hidden">Extra Image 3</label>
+          <input
+            type="text"
+            value={images[3]}
+            name="image3"
+            onChange={(e) => setImage(3, e.target.value)}
+          />
+          {errors.images[3]}
+          <label htmlFor="image4" className="hidden">Extra Image 4</label>
+          <input
+            type="text"
+            value={images[4]}
+            name="image4"
+            onChange={(e) => setImage(4, e.target.value)}
+          />
+          {errors.images[4]}
         </div>
-        <input
-          type="text"
-          value={images[0]}
-          onChange={(e) => setImage(0, e.target.value)}
-          required
-        />
-        {errors.images[0]}
-        <input
-          type="text"
-          value={images[1]}
-          onChange={(e) => setImage(1, e.target.value)}
-        />
-        {errors.images[1]}
-        <input
-          type="text"
-          value={images[2]}
-          onChange={(e) => setImage(2, e.target.value)}
-        />
-        {errors.images[2]}
-        <input
-          type="text"
-          value={images[3]}
-          onChange={(e) => setImage(3, e.target.value)}
-        />
-        {errors.images[3]}
-        <input
-          type="text"
-          value={images[4]}
-          onChange={(e) => setImage(4, e.target.value)}
-        />
-        {errors.images[4]}
         <button type="submit">Create Spot</button>
-      </form>
-    </>
+      </form >
+    </main>
   )
 }
 
