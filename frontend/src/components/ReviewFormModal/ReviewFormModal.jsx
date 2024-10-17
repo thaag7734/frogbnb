@@ -32,10 +32,6 @@ function ReviewFormModal({ spotId }) {
     return starCount;
   }
 
-  const createError = (msg) => {
-    return <span className="error">{msg}</span>;
-  }
-
   useEffect(() => { }, [errors]);
 
   const handleSubmit = (e) => {
@@ -49,7 +45,7 @@ function ReviewFormModal({ spotId }) {
 
         if (body.errors) {
           Object.entries(body.errors).forEach(([err, msg]) => {
-            backendErrors[err] = createError(msg);
+            backendErrors[err] = <ErrorSpan msg={msg} />;
           });
         }
 

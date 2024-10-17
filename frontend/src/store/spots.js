@@ -71,6 +71,7 @@ const CREATE_SPOT = 'spots/createSpot';
 const CREATE_SPOT_IMAGE = 'spots/createSpotImage';
 const DELETE_SPOT = 'spots/deleteSpot';
 const CREATE_SPOT_REVIEW = 'spots/createSpotReview';
+const DELETE_REVIEW = 'spots/deleteSpotReview';
 
 /**
  * Add all spots to state
@@ -159,6 +160,17 @@ export const createSpotReview = (spotId, review) => {
     review,
   };
 };
+
+/**
+ * Remove a review from the state
+ * @param { Review } review The review to remove
+ */
+export const deleteReview = (review) => {
+  return {
+    type: DELETE_REVIEW,
+    review,
+  };
+}
 
 /**
  * Send a request to the GET /spots endpoint and return the spots as an array
@@ -284,6 +296,34 @@ export const createSpotReviewThunk = (spotId, review) => async (dispatch) => {
 }
 
 /**
+ * Send a request to the DELETE /reviews/:reviewId endpoint and return the success message
+ * or errors if present
+ * @param { Review } review The review to be deleted
+ */
+export const deleteReviewThunk = (review) => async (dispatch) => {
+  const res = await csrfFetch(`/api/reviews/${review.id}`, {
+    method: 'DELETE',
+  });
+
+  if (res.status >= 400) {
+    return await res.json();
+  }
+
+  dispatch(deleteReview(review));
+
+  return await res.json();
+}
+
+/**
+ * Calculates the average rating given an array of Reviews
+ * @param { Review[] } reviews An array of Reviews
+ * @returns { number }
+ */
+const calculateAvgStarRating = (reviews) => {
+  return reviews.reduce((sum, { stars }) => sum + stars, 0);
+}
+
+/**
  * @param { SpotCollection } state
  * @returns { SpotCollection }
  */
@@ -335,16 +375,25 @@ const spotsReducer = (state = {}, action) => {
         [action.spotId]: {
           ...state[action.spotId],
           numReviews: ++state[action.spotId].numReviews,
-          avgStarRating: state[action.spotId]
-            .review
-            .reduce((sum, { stars }) => sum + stars,
-              action.review.stars) / (state[action.spotId].numReviews),
           reviews: [
             ...state[action.spotId]?.reviews,
             action.review,
           ],
+          avgRating: calculateAvgStarRating(state[action.spotId].reviews),
         },
       };
+    case DELETE_REVIEW:
+      return {
+        ...state,
+        [action.review.spotId]: {
+          ...state[action.review.spotId],
+          numReviews: ++state[action.review.spotId].numReviews,
+          reviews: state[action.review.spotId].reviews.filter(
+            (rvw) => rvw.id !== action.review.id
+          ),
+          avgRating: calculateAvgStarRating(state[action.review.spotId].reviews),
+        }
+      }
     default:
       return state;
   }

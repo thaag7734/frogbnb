@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import './SpotDetails.css';
 import { useState, useEffect } from "react";
-import { getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
+import { deleteReviewThunk, getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
 import { FaStar } from "react-icons/fa";
 import '../../vlib/proto/date.js';
 import '../../vlib/proto/number.js';
@@ -18,6 +18,8 @@ function SpotDetails() {
   const spot = useSelector(state => state.spots[id]);
   const session = useSelector(state => state.session);
   const [displayRating, setDisplayRating] = useState(null);
+  const [displayReviews, setDisplayReviews] = useState('- reviews');
+  const [reviewErrors, setReviewErrors] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,7 +41,23 @@ function SpotDetails() {
         ? 'New'
         : parseFloat(spot.avgStarRating).toDynamic(2, 1)
     );
+
+    setDisplayReviews(
+      spot.numReviews === 1
+        ? '1 review'
+        : spot.numReviews + ' reviews'
+    );
   }, [spot]);
+
+  const handleDeleteReview = (review) => {
+    dispatch(deleteReviewThunk(review))
+      .catch((body) => {
+        setReviewErrors({
+          ...reviewErrors,
+          [review.id]: <ErrorSpan msg={body.message} />,
+        });
+      });
+  };
 
   return spotLoaded
     ? spot
@@ -75,7 +93,7 @@ function SpotDetails() {
                     <FaStar />{displayRating}
                   </span>
                   <span className="dividot">•</span>
-                  <span className="review-count">{spot.numReviews} reviews</span>
+                  <span className="review-count">{displayReviews}</span>
                 </div>
               </div>
               <button className="reserve-btn">Reserve</button>
@@ -88,7 +106,7 @@ function SpotDetails() {
                 <FaStar />{displayRating}
               </span>
               <span className="dividot lg">•</span>
-              <span className="review-count lg">{spot.numReviews} reviews</span>
+              <span className="review-count lg">{displayReviews}</span>
             </div>
             {reviewsLoaded
               ? spot.reviews?.length
@@ -111,6 +129,13 @@ function SpotDetails() {
                           </span>
                         </div>
                         <p>{review.review}</p>
+                        {review.User.id === session.user?.id && (
+                          <button
+                            className="delete-review"
+                            onClick={() => handleDeleteReview(review)}
+                          >Delete</button>
+                        )}
+                        {reviewErrors[review.id]}
                       </div>
                     ))}
                   </div>

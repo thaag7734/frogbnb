@@ -25,14 +25,6 @@ function NewSpotForm() {
   let runningErrors = { images: [] };
 
   /**
-   * Creates an error element containing containing `msg` as text
-   * @param { string } msg The error message to be displayed
-   */
-  const createError = (msg) => {
-    return <span className="error">{msg}</span>
-  }
-
-  /**
    * Validate all form fields and set the errors state. Returns `true` if validations pass,
    * `false` otherwise
    * @returns { boolean }
@@ -54,48 +46,52 @@ function NewSpotForm() {
       //'.webp',
     ];
 
-    if (!country) validationErrors.country = createError('Country is required');
-    if (!address) validationErrors.address = createError('Address is required');
-    if (!city) validationErrors.city = createError('City is required');
-    if (!state) validationErrors.state = createError('State is required');
-    if (!lat) validationErrors.lat = createError('Latitude is required');
-    if (!lng) validationErrors.lng = createError('Longitude is required');
-    if (!desc) validationErrors.desc = createError('Description is required');
-    if (!title) validationErrors.title = createError('Title is required');
-    if (!price) validationErrors.price = createError('Price is required');
-    if (!images[0]) validationErrors.images[0] = createError('Preview image is required');
+    if (!country) validationErrors.country = <ErrorSpan msg="Country is required" />;
+    if (!address) validationErrors.address = <ErrorSpan msg="Address is required" />;
+    if (!city) validationErrors.city = <ErrorSpan msg="City is required" />;
+    if (!state) validationErrors.state = <ErrorSpan msg="State is required" />;
+    if (!lat) validationErrors.lat = <ErrorSpan msg="Latitude is required" />;
+    if (!lng) validationErrors.lng = <ErrorSpan msg="Longitude is required" />;
+    if (!desc) validationErrors.desc = <ErrorSpan msg="Description is required" />;
+    if (!title) validationErrors.title = <ErrorSpan msg="Title is required" />;
+    if (!price) validationErrors.price = <ErrorSpan msg="Price is required" />;
+    if (!images[0]) validationErrors.images[0] = <ErrorSpan
+      msg="Preview image is required"
+    />;
 
     // TODO make this a loop probably
     if (images[0] && !images[0].toLowerCase().endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[0] = createError('URL must point to an image file');
+      validationErrors.images[0] = <ErrorSpan msg="URL must point to an image file" />;
     }
     if (images[1] && !images[1].toLowerCase().endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[1] = createError('URL must point to an image file');
+      validationErrors.images[1] = <ErrorSpan msg="URL must point to an image file" />;
     }
     if (images[2] && !images[2].toLowerCase().endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[2] = createError('URL must point to an image file');
+      validationErrors.images[2] = <ErrorSpan msg="URL must point to an image file" />;
     }
     if (images[3] && !images[3].toLowerCase().endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[3] = createError('URL must point to an image file');
+      validationErrors.images[3] = <ErrorSpan msg="URL must point to an image file" />;
     }
     if (images[4] && !images[4].toLowerCase().endsWithOne(imageUrlSuffixes)) {
-      validationErrors.images[4] = createError('URL must point to an image file');
+      validationErrors.images[4] = <ErrorSpan msg="URL must point to an image file" />;
     }
 
     const floatLat = parseFloat(lat);
     const floatLng = parseFloat(lng);
 
     if (lat && (Number.isNaN(floatLat) || -90 > floatLat || floatLat > 90)) {
-      validationErrors.lat = createError('Latitude must be a number from -90 to 90');
+      validationErrors.lat = <ErrorSpan msg="Latitude must be a number from -90 to 90" />;
     }
     if (lng && (Number.isNaN(floatLng) || -180 > floatLng || floatLng > 180)) {
-      validationErrors.lng = createError('Longitude must be a number from -180 to 180');
+      validationErrors.lng = <ErrorSpan
+        msg="Longitude must be a number from -180 to 180"
+      />;
     }
 
     const floatPrice = parseFloat(price);
 
     if (price && (Number.isNaN(floatPrice) || floatPrice <= 0)) {
-      validationErrors.price = createError('Price must be a number greater than zero');
+      validationErrors.price = <ErrorSpan msg="Price must be a number greater than zero" />;
     }
 
     runningErrors = validationErrors;
@@ -129,7 +125,7 @@ function NewSpotForm() {
 
     const handleImgFailure = (eRes, idx) => {
       return eRes.json().then((eBody) => {
-        runningErrors.images[idx] = createError(eBody.errors.url);
+        runningErrors.images[idx] = <ErrorSpan msg={eBody.errors.url} />
       });
     }
 
@@ -179,7 +175,7 @@ function NewSpotForm() {
       });
     }).catch((eRes) => eRes.json().then((eBody) => {
       for (const [err, msg] of Object.entries(eBody.errors)) {
-        runningErrors[err] = createError(msg);
+        runningErrors[err] = <ErrorSpan msg={msg} />;
       }
 
       setErrors({ ...runningErrors });
