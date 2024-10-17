@@ -276,7 +276,9 @@ export const createSpotReviewThunk = (spotId, review) => async (dispatch) => {
 
   if (body.errors) return body;
 
-  dispatch(createSpotReview(body));
+  console.log('body in thunk ===>', body);
+
+  dispatch(createSpotReview(spotId, body));
 
   return body;
 }

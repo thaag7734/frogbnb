@@ -119,7 +119,7 @@ function NewSpotForm() {
     setDesc('ribbit ribbit ribbit ribbit ribbit ribbit ribbit');
     setTitle('ribbit');
     setPrice(41.30);
-    setImages(['9&.jpg', '9&.jpg', '9&.jpg', '9&.jpg', '9&.jpg']);
+    setImages(['https://i.ibb.co/LCpjhWh/tetangerine.png', '', '', '', '']);
   }
 
   const handleSubmit = async (e) => {

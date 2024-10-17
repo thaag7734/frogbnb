@@ -77,24 +77,28 @@ function ReviewFormModal({ spotId }) {
         <div className="star-choice">
           <div>
             {stars.map((starFilled, idx) => {
-              return starFilled || (hoveredStar !== null && idx <= hoveredStar)
-                ? <FaStar
+              return (
+                <span
                   key={idx}
                   onClick={() => selectStar(idx)}
-                  onPointerLeave={() => exitHoverStar(idx)}
-                />
-                : <FaRegStar
-                  key={idx}
-                  onClick={() => selectStar(idx)}
-                  onPointerEnter={() => hoverStar(idx)}
-                />
+                  onMouseEnter={() => hoverStar(idx)}
+                  onMouseLeave={exitHoverStar}
+                >
+                  {
+                    starFilled
+                      || (hoveredStar !== null && idx <= hoveredStar)
+                      ? <FaStar />
+                      : <FaRegStar />
+                  }
+                </span>
+              );
             })}
           </div>
           <span>Stars</span>
         </div>
         {errors.stars}
         <button type="submit">Submit Your Review</button>
-      </form>
+      </form >
     </>
   );
 }

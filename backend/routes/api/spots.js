@@ -707,7 +707,6 @@ const validateReview = [               // do we need to validate id type fields:
 router.post('/:spotId/reviews',
   restoreUser, requireAuth, validateReview,
   async (req, res, next) => {
-    console.log(req.body);
 
     const { spotId } = req.params;          // retireve spotId to add review at
     const { review, stars } = req.body;     // retrieve info to populate review
@@ -742,7 +741,14 @@ router.post('/:spotId/reviews',
         userId, review, stars
       });
 
-      return res.status(201).json(newReview);
+      return res.status(201).json({
+        ...newReview.toJSON(),
+        User: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      });
     } catch (e) {
       return next(e);
     }
