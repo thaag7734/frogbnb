@@ -107,7 +107,7 @@ function NewSpotForm() {
     );
   };
 
-  useEffect(() => { console.log('useState') }, [errors]);
+  useEffect(() => { }, [errors]);
 
   const fillDummyData = () => {
     setCountry('USA');
@@ -178,8 +178,6 @@ function NewSpotForm() {
         }
       });
     }).catch((eRes) => eRes.json().then((eBody) => {
-      console.log(eBody);
-
       for (const [err, msg] of Object.entries(eBody.errors)) {
         runningErrors[err] = createError(msg);
       }
