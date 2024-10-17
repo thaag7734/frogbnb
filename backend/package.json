@@ -1,7 +1,6 @@
 {
-  "name": "airbnb-clone",
+  "name": "frogbnb",
   "version": "1.0.0",
-  "description": "AirBnB clone pair project",
   "main": "bin/www",
   "scripts": {
     "test": "test",

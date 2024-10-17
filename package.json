@@ -1,7 +1,7 @@
 {
-  "name": "airbnb-clone",
+  "name": "frogbnb",
   "version": "1.0.0",
-  "description": "AirBnB clone pair project",
+  "description": "AirBnB for frogs",
   "main": "backend/bin/www",
   "scripts": {
     "install": "npm --prefix backend install",
