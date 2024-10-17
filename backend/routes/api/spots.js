@@ -694,7 +694,7 @@ const validateReview = [               // do we need to validate id type fields:
     .isString()
     .withMessage('Review must be a string')
     .isLength({ max: 4000 })
-    .withMessage('Review must not exceed the length of a verified user\'s tweet'),
+    .withMessage('Review must not exceed 4000 characters'),
   check('stars')
     .exists({ checkFalsy: true })
     .withMessage('Stars rating is required')
@@ -707,6 +707,7 @@ const validateReview = [               // do we need to validate id type fields:
 router.post('/:spotId/reviews',
   restoreUser, requireAuth, validateReview,
   async (req, res, next) => {
+    console.log(req.body);
 
     const { spotId } = req.params;          // retireve spotId to add review at
     const { review, stars } = req.body;     // retrieve info to populate review

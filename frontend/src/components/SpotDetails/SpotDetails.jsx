@@ -6,6 +6,9 @@ import { getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
 import { FaStar } from "react-icons/fa";
 import '../../vlib/proto/date.js';
 import '../../vlib/proto/number.js';
+import OpenModalMenuItem from "../Navigation/OpenModalMenuItem.jsx";
+import ReviewFormModal from "../ReviewFormModal/ReviewFormModal.jsx";
+import OpenModalButton from "../OpenModalButton/OpenModalButton.jsx";
 
 function SpotDetails() {
   const { id } = useParams();
@@ -13,6 +16,7 @@ function SpotDetails() {
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
   const [preview, setPreview] = useState(null);
   const spot = useSelector(state => state.spots[id]);
+  const session = useSelector(state => state.session);
   const [displayRating, setDisplayRating] = useState(null);
   const dispatch = useDispatch();
 
@@ -110,12 +114,21 @@ function SpotDetails() {
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="first-review">
-                    <button>Post Your Review</button> {/* TODO make this a component */}
-                    <span>Be the first to post a review!</span>
-                  </div>
-                ) : (
+                ) : session.user
+                  ? (
+                    <div className="first-review">
+                      <OpenModalButton
+                        modalComponent={<ReviewFormModal spotId={spot.id} />}
+                        buttonText="Post Your Review"
+                      />
+                      <p>Be the first to post a review!</p>
+                    </div>
+                  ) : (
+                    <div className="no-reviews">
+                      <h3>No Reviews (yet)</h3>
+                      <p>Sign in and be the first to leave a review!</p>
+                    </div>
+                  ) : (
                 <h2>Loading reviews...</h2>
               )
             }

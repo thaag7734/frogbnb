@@ -19,8 +19,7 @@ function LoginFormModal() {
       .catch(async (res) => {
         const data = await res.json();
         if (data?.errors) setErrors(data.errors);
-      }
-      );
+      });
   };
 
   return (

@@ -70,6 +70,7 @@ const GET_SPOT_REVIEWS = 'spots/getSpotReviews';
 const CREATE_SPOT = 'spots/createSpot';
 const CREATE_SPOT_IMAGE = 'spots/createSpotImage';
 const DELETE_SPOT = 'spots/deleteSpot';
+const CREATE_SPOT_REVIEW = 'spots/createSpotReview';
 
 /**
  * Add all spots to state
@@ -146,8 +147,21 @@ export const deleteSpot = (id) => {
 };
 
 /**
+ * Add a Review to a Spot in the state
+ * @param { number } spotId The ID of the Spot to add the Review to
+ * @param { Review } review The Review object to add to the Spot
+ * @returns {{ type: string, spotId: number, review: Review }}
+ */
+export const createSpotReview = (spotId, review) => {
+  return {
+    type: CREATE_SPOT_REVIEW,
+    spotId,
+    review,
+  };
+};
+
+/**
  * Send a request to the GET /spots endpoint and return the spots as an array
- * @returns { Spot[] }
  */
 export const getAllSpotsThunk = () => async (dispatch) => {
   const res = await csrfFetch('/api/spots');
@@ -248,6 +262,26 @@ export const deleteSpotThunk = (id) => async (dispatch) => {
 }
 
 /**
+ * Send a request to the POST /spots/:spotId/reviews endpoint and return the review
+ * @param { number } spotId The ID of the Spot to add the review to
+ * @param { Review } review The Review object to be created
+ */
+export const createSpotReviewThunk = (spotId, review) => async (dispatch) => {
+  const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
+    method: 'POST',
+    body: JSON.stringify(review),
+  });
+
+  const body = await res.json();
+
+  if (body.errors) return body;
+
+  dispatch(createSpotReview(body));
+
+  return body;
+}
+
+/**
  * @param { SpotCollection } state
  * @returns { SpotCollection }
  */
@@ -282,9 +316,9 @@ const spotsReducer = (state = {}, action) => {
       return {
         ...state,
         [action.img.spotId]: {
-          ...(state[action.img.spotId] ?? {}),
+          ...state[action.img.spotId],
           SpotImages: [
-            ...state[action.img.spotId]?.SpotImages ?? [],
+            ...state[action.img.spotId]?.SpotImages,
             action.img,
           ],
         },
@@ -293,6 +327,17 @@ const spotsReducer = (state = {}, action) => {
       return Object.fromEntries(
         Object.entries(state).filter(([id]) => id !== action.id)
       );
+    case CREATE_SPOT_REVIEW:
+      return {
+        ...state,
+        [action.spotId]: {
+          ...state[action.spotId],
+          reviews: [
+            ...state[action.spotId]?.reviews,
+            action.review,
+          ],
+        },
+      };
     default:
       return state;
   }
