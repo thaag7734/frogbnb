@@ -97,7 +97,10 @@ function ReviewFormModal({ spotId }) {
           <span>Stars</span>
         </div>
         {errors.stars}
-        <button type="submit">Submit Your Review</button>
+        <button
+          type="submit"
+          disabled={review.length < 10 || !stars.find((star) => star)}
+        >Submit Your Review</button>
       </form >
     </>
   );

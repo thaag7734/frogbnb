@@ -334,6 +334,11 @@ const spotsReducer = (state = {}, action) => {
         ...state,
         [action.spotId]: {
           ...state[action.spotId],
+          numReviews: ++state[action.spotId].numReviews,
+          avgStarRating: state[action.spotId]
+            .review
+            .reduce((sum, { stars }) => sum + stars,
+              action.review.stars) / (state[action.spotId].numReviews),
           reviews: [
             ...state[action.spotId]?.reviews,
             action.review,
