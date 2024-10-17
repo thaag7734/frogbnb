@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import '../../vlib/proto/string.js';
-import { createSpotImage, createSpotImageThunk, createSpotThunk, deleteSpotThunk } from "../../store/spots.js";
+import { createSpotImageThunk, createSpotThunk, deleteSpotThunk } from "../../store/spots.js";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -22,7 +22,7 @@ function NewSpotForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  let runningErrors = errors;
+  let runningErrors = { images: [] };
 
   /**
    * Creates an error element containing containing `msg` as text
@@ -39,6 +39,7 @@ function NewSpotForm() {
    */
   const validate = () => {
     const validationErrors = { images: [] };
+    runningErrors = { images: [] };
 
     const imageUrlSuffixes = [
       //'.apng',
@@ -61,7 +62,7 @@ function NewSpotForm() {
     if (!lng) validationErrors.lng = createError('Longitude is required');
     if (!desc) validationErrors.desc = createError('Description is required');
     if (!title) validationErrors.title = createError('Title is required');
-    if (!price.length) validationErrors.price = createError('Price is required');
+    if (!price) validationErrors.price = createError('Price is required');
     if (!images[0]) validationErrors.images[0] = createError('Preview image is required');
 
     // TODO make this a loop probably
@@ -97,9 +98,8 @@ function NewSpotForm() {
       validationErrors.price = createError('Price must be a number greater than zero');
     }
 
-    console.log('calling regular setErrors');
-    setErrors(validationErrors);
     runningErrors = validationErrors;
+    setErrors(validationErrors);
 
     return (
       Object.entries(validationErrors).length === 1
@@ -107,12 +107,31 @@ function NewSpotForm() {
     );
   };
 
-  useEffect(() => { }, [errors]);
+  useEffect(() => { console.log('useState') }, [errors]);
+
+  const fillDummyData = () => {
+    setCountry('USA');
+    setAddress('123 Ribbit Rd');
+    setCity('Frog Island');
+    setState('NC');
+    setLat('36.1404343');
+    setLng('-76.1249702');
+    setDesc('ribbit ribbit ribbit ribbit ribbit ribbit ribbit');
+    setTitle('ribbit');
+    setPrice(41.30);
+    setImages(['9&.jpg', '9&.jpg', '9&.jpg', '9&.jpg', '9&.jpg']);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
+
+    const handleImgFailure = (eRes, idx) => {
+      return eRes.json().then((eBody) => {
+        runningErrors.images[idx] = createError(eBody.errors.url);
+      });
+    }
 
     dispatch(
       createSpotThunk({
@@ -131,42 +150,41 @@ function NewSpotForm() {
       const promises = [
         dispatch(createSpotImageThunk(
           { spotId: res.id, url: images[0], preview: true },
-        ))
+        )).catch((eRes) => handleImgFailure(eRes, 0))
       ];
 
-      for (const img of images.slice(1)) {
-        if (!img) continue;
+      for (let idx = 1; idx < images.length; idx++) {
+        if (!images[idx]) continue;
         promises.push(
-          dispatch(createSpotImageThunk({ url: img, preview: false }))
-            .catch((eRes) => eRes.json().then((eBody) => {
-              runningErrors = {
-                ...errors,
-                images: [
-                  ...errors.images.slice(0, idx),
-                  createError(eBody.errors.url),
-                  ...errors.images.slice(idx + 1),
-                ],
-              };
-              setErrors(() => runningErrors);
-            }))
+          dispatch(createSpotImageThunk({
+            spotId: res.id,
+            url: images[idx],
+            preview: false
+          }))
+            .catch((eRes) => handleImgFailure(eRes, idx))
         );
       }
 
-      Promise.all(promises).then(() => {
-        if (Object.entries(runningErrors).length === 1 && runningErrors.images.length === 0) {
+      Promise.allSettled(promises).then(() => {
+        setErrors({ ...runningErrors });
+
+        if (
+          Object.entries(runningErrors).length === 1 && runningErrors.images.length === 0
+        ) {
           navigate(`/spots/${res.id}`);
         } else {
-          dispatch(deleteSpotThunk(res.id)); // if this fails for any reason, everything breaks
+          // if this fails for any reason, everything breaks
+          dispatch(deleteSpotThunk(res.id));
         }
       });
     }).catch((eRes) => eRes.json().then((eBody) => {
-      const backendErrors = { images: [] };
+      console.log(eBody);
 
       for (const [err, msg] of Object.entries(eBody.errors)) {
-        backendErrors[err] = createError(msg);
+        runningErrors[err] = createError(msg);
       }
 
-      setErrors(backendErrors);
+      setErrors({ ...runningErrors });
       return;
     }));
   };
@@ -191,6 +209,7 @@ function NewSpotForm() {
         <h2>Where&#39;s your place located?</h2>
         <p>Guests will only get your exact address once they book a reservation</p>
       </div>
+      <button onClick={fillDummyData}>Fill Dummy Data</button>
       <form onSubmit={handleSubmit}>
         <label htmlFor="country">Country</label>
         {errors.country}
@@ -275,7 +294,7 @@ function NewSpotForm() {
         <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
         <span className="money">$</span>
         <input
-          type="text"
+          type="number"
           value={price}
           name="price"
           onChange={(e) => setPrice(e.target.value)}

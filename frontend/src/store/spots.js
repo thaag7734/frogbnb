@@ -279,13 +279,12 @@ const spotsReducer = (state = {}, action) => {
         },
       };
     case CREATE_SPOT_IMAGE:
-      const spotId = action.img.spotId;
       return {
         ...state,
-        [spotId]: {
-          ...(state[spotId] ?? {}),
+        [action.img.spotId]: {
+          ...(state[action.img.spotId] ?? {}),
           SpotImages: [
-            ...state[spotId]?.SpotImages ?? [],
+            ...state[action.img.spotId]?.SpotImages ?? [],
             action.img,
           ],
         },
