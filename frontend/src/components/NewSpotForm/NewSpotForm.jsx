@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import '../../vlib/proto/string.js';
-import { createSpotImageThunk, createSpotThunk, deleteSpotThunk, getSpotDetailsThunk, updateSpotImageThunk, updateSpotThunk } from "../../store/spots.js";
+import { createSpotImageThunk, createSpotThunk, deleteSpotImageThunk, deleteSpotThunk, getSpotDetailsThunk, updateSpotImageThunk, updateSpotThunk } from "../../store/spots.js";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -120,9 +120,7 @@ function NewSpotForm() {
       const spot = spots[spotId];
 
       if (spot) {
-        console.log('dispatching');
         dispatch(getSpotDetailsThunk(spotId)).then((spot) => {
-          console.log('spot in then ===>', spot);
           setCountry(spot.country);
           setAddress(spot.address);
           setCity(spot.city);
@@ -133,19 +131,17 @@ function NewSpotForm() {
           setTitle(spot.name);
           setPrice(spot.price);
 
-          const previewImage = spot.previewImage
-            ?? spot.SpotImages.find((img) => img.preview)
+          const previewImage = spot.SpotImages.find((img) => img.preview);
 
           const newImages = [
             previewImage,
-            ...spot.SpotImages.filter((img) => !img.preview).slice(1, 4),
+            ...spot.SpotImages.filter((img) => !img.preview).slice(0, 4),
           ];
 
           while (newImages.length < 5) {
             newImages.push({ url: '', preview: false });
           }
 
-          console.log('setting images');
           setImages([...newImages]);
         });
       }
@@ -165,11 +161,11 @@ function NewSpotForm() {
     setTitle('ribbit');
     setPrice(41.30);
     setImages([
-      { url: 'https://i.ibb.co/LCpjhWh/tetangerine.png', preview: true },
-      { url: '', preview: false },
-      { url: '', preview: false },
-      { url: '', preview: false },
-      { url: '', preview: false },
+      { id: images[0].id, url: 'https://i.ibb.co/LCpjhWh/tetangerine.png', preview: true },
+      { id: images[1].id, url: '', preview: false },
+      { id: images[2].id, url: '', preview: false },
+      { id: images[3].id, url: '', preview: false },
+      { id: images[4].id, url: '', preview: false },
     ]);
   }
 
@@ -221,11 +217,8 @@ function NewSpotForm() {
     }
 
     thunk.then((res) => {
-      console.log('spot in thunk.then ===>', spot);
-      // TODO this uses a pretty gross hack to tell if the spot images are new,
-      // it should be updated to something even slightly more reasonable asap
       const promises = [
-        images[0].spotId
+        images[0].id
           ? dispatch(updateSpotImageThunk(images[0]))
             .catch((eRes) => handleImgFailure(eRes, 0))
           : dispatch(createSpotImageThunk({ ...images[0], spotId }))
@@ -233,9 +226,16 @@ function NewSpotForm() {
       ];
 
       for (let idx = 1; idx < images.length; idx++) {
-        if (!images[idx].url) continue;
+        if (!images[idx].url) {
+          if (images[idx].id) {
+            dispatch(deleteSpotImageThunk(images[idx]))
+              .catch((eRes) => handleImgFailure(eRes, idx));
+          };
+
+          continue;
+        }
         promises.push(
-          images[idx].spotId
+          images[idx].id
             ? dispatch(updateSpotImageThunk(images[idx]))
               .catch((eRes) => handleImgFailure(eRes, idx))
             : dispatch(createSpotImageThunk({ ...images[idx], spotId }))
@@ -271,7 +271,6 @@ function NewSpotForm() {
    * @param { string } value The value to set
    */
   const setImage = (idx, value) => {
-    console.log('images in setImage ===>', images);
     const imgs = [...images];
 
     imgs[idx].url = value;
