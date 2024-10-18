@@ -74,6 +74,7 @@ const CREATE_SPOT_REVIEW = 'spots/createSpotReview';
 
 const DELETE_SPOT = 'spots/deleteSpot';
 const DELETE_REVIEW = 'spots/deleteSpotReview';
+const DELETE_SPOT_IMAGE = 'spots/deleteSpotImage';
 
 const UPDATE_SPOT = 'spots/updateSpot';
 const UPDATE_SPOT_IMAGE = 'spots/updateSpotImage';
@@ -195,6 +196,17 @@ export const updateSpot = (spot) => {
 export const updateSpotImage = (image) => {
   return {
     type: UPDATE_SPOT_IMAGE,
+    image,
+  };
+};
+
+/**
+ * Remove a SpotImage from the state
+ * @param { SpotImage } image The image to remove
+ */
+export const deleteSpotImage = (image) => {
+  return {
+    type: DELETE_SPOT_IMAGE,
     image,
   };
 };
@@ -380,6 +392,24 @@ export const updateSpotImageThunk = (image) => async (dispatch) => {
 }
 
 /**
+ * Send a request to the DELETE /spot-images/:imageId endpoint and return the success/errors
+ * @param { SpotImage } image The SpotImage to delete
+ */
+export const deleteSpotImageThunk = (image) => async (dispatch) => {
+  const res = await csrfFetch(`/api/spot-images/${image.id}`, {
+    method: 'DELETE',
+  });
+
+  const body = await res.json();
+
+  if (res.status >= 400) return body;
+
+  dispatch(deleteSpotImage(id));
+
+  return body;
+}
+
+/**
  * Calculates the average rating given an array of Reviews
  * @param { Review[] } reviews An array of Reviews
  * @returns { number }
@@ -426,7 +456,7 @@ const spotsReducer = (state = {}, action) => {
         [action.img.spotId]: {
           ...state[action.img.spotId],
           SpotImages: [
-            ...state[action.img.spotId]?.SpotImages,
+            ...state[action.img.spotId]?.SpotImages ?? [],
             action.img,
           ],
         },
@@ -467,9 +497,21 @@ const spotsReducer = (state = {}, action) => {
           ...state[action.image.spotId],
           SpotImages: [
             ...state[action.image.spotId]
-              ?.SpotImages
-              ?.filter((i) => i.id !== action.image.id),
+              ?.SpotImages ?? []
+                .filter((i) => i.id !== action.image.id),
             action.image,
+          ],
+        },
+      };
+    case DELETE_SPOT_IMAGE:
+      return {
+        ...state,
+        [action.image.spotId]: {
+          ...state[action.image.spotId],
+          SpotImages: [
+            ...state[action.image.spotId]
+              ?.SpotImages ?? []
+                ?.filter((i) => i.id !== action.image.id),
           ],
         },
       };

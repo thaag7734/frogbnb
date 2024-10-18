@@ -9,6 +9,7 @@ import '../../vlib/proto/number.js';
 import OpenModalMenuItem from "../Navigation/OpenModalMenuItem.jsx";
 import ReviewFormModal from "../ReviewFormModal/ReviewFormModal.jsx";
 import OpenModalButton from "../OpenModalButton/OpenModalButton.jsx";
+import DeleteReviewModal from "./DeleteReviewModal.jsx";
 
 function SpotDetails() {
   const { id } = useParams();
@@ -48,16 +49,6 @@ function SpotDetails() {
         : spot.numReviews + ' reviews'
     );
   }, [spot]);
-
-  const handleDeleteReview = (review) => {
-    dispatch(deleteReviewThunk(review))
-      .catch((body) => {
-        setReviewErrors({
-          ...reviewErrors,
-          [review.id]: <ErrorSpan msg={body.message} />,
-        });
-      });
-  };
 
   return spotLoaded
     ? spot
@@ -130,12 +121,11 @@ function SpotDetails() {
                         </div>
                         <p>{review.review}</p>
                         {review.User.id === session.user?.id && (
-                          <button
-                            className="delete-review"
-                            onClick={() => handleDeleteReview(review)}
-                          >Delete</button>
+                          <OpenModalButton
+                            modalComponent={<DeleteReviewModal review={review} />}
+                            buttonText="Delete"
+                          />
                         )}
-                        {reviewErrors[review.id]}
                       </div>
                     ))}
                   </div>

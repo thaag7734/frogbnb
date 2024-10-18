@@ -23,6 +23,8 @@ function ManageSpots() {
     }
   });
 
+  useEffect(() => { }, [spots]);
+
   return (
     <main>
       <div className="header">
@@ -33,9 +35,7 @@ function ManageSpots() {
         user
           ? Object.entries(spots).length
             ? Object.values(spots).map((spot) => spot.ownerId === user.id && (
-              <Link key={spot.id} to={`/spots/${spot.id}/update`}>
-                <SpotCard spot={spot} manage={true} />
-              </Link>
+              <SpotCard key={spot.id} spot={spot} manage={true} />
             ))
             : loaded
               ? <p>You don't have any spots! Click the button above to create a new one.</p>
