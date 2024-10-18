@@ -37,9 +37,9 @@ function SpotDetails() {
     if (!spot) return setDisplayRating('-.--');
 
     setDisplayRating(
-      spot.avgStarRating == null
+      spot.avgRating == null
         ? 'New'
-        : parseFloat(spot.avgStarRating).toDynamic(2, 1)
+        : parseFloat(spot.avgRating).toDynamic(2, 1)
     );
 
     setDisplayReviews(

@@ -154,7 +154,7 @@ router.get('/',
           price: parseFloat(spot.price), // probably worth doing it here too.
           createdAt: spot.createdAt,
           updatedAt: spot.updatedAt,
-          avgRating: spot.get('avgRating') ? parseFloat(spot.get('avgRating')).toFixed(1) : null,
+          avgRating: parseFloat(spot.get('avgRating')).toFixed(2) || null,
           previewImage: spot.SpotImages.length ? spot.SpotImages[0].url : null,
         }
       });
@@ -298,7 +298,7 @@ router.get('/current',
           price: userSpots.price,
           createdAt: userSpots.createdAt,
           updatedAt: userSpots.updatedAt,
-          avgRating: parseFloat(userSpots.get('avgRating')).toFixed(1) || null,
+          avgRating: parseFloat(userSpots.get('avgRating')).toFixed(2) || null,
           previewImage: userSpots.SpotImages.length ? userSpots.SpotImages[0].url : null
         }));
 
@@ -349,7 +349,7 @@ router.get('/:spotId',
         raw: true,
         attributes: [
           [Sequelize.fn('COUNT', Sequelize.col('Review.id')), 'numReviews'],
-          [Sequelize.fn('AVG', Sequelize.col('stars')), 'avgStarRating']
+          [Sequelize.fn('AVG', Sequelize.col('stars')), 'avgRating']
         ]
       });
 
@@ -370,7 +370,7 @@ router.get('/:spotId',
         createdAt: spot.createdAt,
         updatedAt: spot.updatedAt,
         numReviews: parseInt(aggregateStats.numReviews) || 0,
-        avgStarRating: parseFloat(aggregateStats.avgStarRating) || null,
+        avgRating: parseFloat(aggregateStats.avgRating) || null,
         SpotImages: spot.SpotImages,
         Owner: {
           id: spot.Owner.id,

@@ -67,11 +67,16 @@ const normalizeSpots = (spots) => {
 const GET_ALL_SPOTS = 'spots/getAllSpots';
 const GET_SPOT_DETAILS = 'spots/getSpotDetails';
 const GET_SPOT_REVIEWS = 'spots/getSpotReviews';
+
 const CREATE_SPOT = 'spots/createSpot';
 const CREATE_SPOT_IMAGE = 'spots/createSpotImage';
-const DELETE_SPOT = 'spots/deleteSpot';
 const CREATE_SPOT_REVIEW = 'spots/createSpotReview';
+
+const DELETE_SPOT = 'spots/deleteSpot';
 const DELETE_REVIEW = 'spots/deleteSpotReview';
+
+const UPDATE_SPOT = 'spots/updateSpot';
+const UPDATE_SPOT_IMAGE = 'spots/updateSpotImage';
 
 /**
  * Add all spots to state
@@ -173,6 +178,28 @@ export const deleteReview = (review) => {
 }
 
 /**
+ * Update a Spot in the state
+ * @param { Spot } spot The updated spot
+ */
+export const updateSpot = (spot) => {
+  return {
+    type: UPDATE_SPOT,
+    spot,
+  };
+};
+
+/**
+ * Update a SpotImage in the state
+ * @param { SpotImage } image The updated image
+ */
+export const updateSpotImage = (image) => {
+  return {
+    type: UPDATE_SPOT_IMAGE,
+    image,
+  };
+};
+
+/**
  * Send a request to the GET /spots endpoint and return the spots as an array
  */
 export const getAllSpotsThunk = () => async (dispatch) => {
@@ -264,13 +291,13 @@ export const deleteSpotThunk = (id) => async (dispatch) => {
     method: 'DELETE',
   });
 
-  const body = await res.json();
-
-  if (body.errors) return body;
+  if (res.status >= 400) {
+    return await res.json();
+  }
 
   dispatch(deleteSpot(id));
 
-  return body;
+  return await res.json();
 }
 
 /**
@@ -315,6 +342,44 @@ export const deleteReviewThunk = (review) => async (dispatch) => {
 }
 
 /**
+ * Send a request to the PUT /spots/:spotId route and return the updated Spot
+ * @param { Spot } spot The updated spot to persist to the DB
+ */
+export const updateSpotThunk = (spot) => async (dispatch) => {
+  const res = await csrfFetch(`/api/spots/${spot.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(spot),
+  });
+
+  const body = await res.json();
+
+  if (res.status >= 400) return body;
+
+  dispatch(updateSpot(body));
+
+  return body;
+}
+
+/**
+ * Send a request to the PUT /spot-images/:imageId endpoint and return the updated SpotImage
+ * @param { SpotImage } image
+ */
+export const updateSpotImageThunk = (image) => async (dispatch) => {
+  const res = await csrfFetch(`/api/spot-images/${image.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(image),
+  });
+
+  const body = await res.json();
+
+  if (res.status >= 400) return body;
+
+  dispatch(updateSpotImage(body));
+
+  return body;
+}
+
+/**
  * Calculates the average rating given an array of Reviews
  * @param { Review[] } reviews An array of Reviews
  * @returns { number }
@@ -348,6 +413,7 @@ const spotsReducer = (state = {}, action) => {
         },
       };
     case CREATE_SPOT:
+    case UPDATE_SPOT:
       return {
         ...state,
         [action.spot.id]: {
@@ -394,6 +460,19 @@ const spotsReducer = (state = {}, action) => {
           avgRating: calculateAvgStarRating(state[action.review.spotId].reviews),
         }
       }
+    case UPDATE_SPOT_IMAGE:
+      return {
+        ...state,
+        [action.image.spotId]: {
+          ...state[action.image.spotId],
+          SpotImages: [
+            ...state[action.image.spotId]
+              ?.SpotImages
+              ?.filter((i) => i.id !== action.image.id),
+            action.image,
+          ],
+        },
+      };
     default:
       return state;
   }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import '../../vlib/proto/string.js';
-import { createSpotImageThunk, createSpotThunk, deleteSpotThunk } from "../../store/spots.js";
+import { createSpotImageThunk, createSpotThunk, deleteSpotThunk, getSpotDetailsThunk, updateSpotImageThunk, updateSpotThunk } from "../../store/spots.js";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import ErrorSpan from '../ErrorSpan/ErrorSpan.jsx';
 
 function NewSpotForm() {
   // java programming simulator
@@ -16,9 +18,18 @@ function NewSpotForm() {
   const [desc, setDesc] = useState('');
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState(0);
+  const { id: spotId } = useParams();
   // NOTE the backend needs to be updated to store a max of 5 SpotImages per Spot
-  const [images, setImages] = useState(['', '', '', '', '']);
+  const [images, setImages] = useState([
+    { url: '', preview: true },
+    { url: '', preview: false },
+    { url: '', preview: false },
+    { url: '', preview: false },
+    { url: '', preview: false },
+  ]);
+  const spots = useSelector(state => state.spots);
   const [errors, setErrors] = useState({ images: [] });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,6 +43,7 @@ function NewSpotForm() {
   const validate = () => {
     const validationErrors = { images: [] };
     runningErrors = { images: [] };
+    console.log('images in validate ===>', images);
 
     const imageUrlSuffixes = [
       //'.apng',
@@ -55,24 +67,24 @@ function NewSpotForm() {
     if (!desc) validationErrors.desc = <ErrorSpan msg="Description is required" />;
     if (!title) validationErrors.title = <ErrorSpan msg="Title is required" />;
     if (!price) validationErrors.price = <ErrorSpan msg="Price is required" />;
-    if (!images[0]) validationErrors.images[0] = <ErrorSpan
+    if (!images[0].url) validationErrors.images[0] = <ErrorSpan
       msg="Preview image is required"
     />;
 
     // TODO make this a loop probably
-    if (images[0] && !images[0].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+    if (images[0].url && !images[0].url.toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[0] = <ErrorSpan msg="URL must point to an image file" />;
     }
-    if (images[1] && !images[1].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+    if (images[1].url && !images[1].url.toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[1] = <ErrorSpan msg="URL must point to an image file" />;
     }
-    if (images[2] && !images[2].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+    if (images[2].url && !images[2].url.toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[2] = <ErrorSpan msg="URL must point to an image file" />;
     }
-    if (images[3] && !images[3].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+    if (images[3].url && !images[3].url.toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[3] = <ErrorSpan msg="URL must point to an image file" />;
     }
-    if (images[4] && !images[4].toLowerCase().endsWithOne(imageUrlSuffixes)) {
+    if (images[4].url && !images[4].url.toLowerCase().endsWithOne(imageUrlSuffixes)) {
       validationErrors.images[4] = <ErrorSpan msg="URL must point to an image file" />;
     }
 
@@ -103,6 +115,43 @@ function NewSpotForm() {
     );
   };
 
+  useEffect(() => {
+    if (spotId != undefined) {
+      const spot = spots[spotId];
+
+      if (spot) {
+        console.log('dispatching');
+        dispatch(getSpotDetailsThunk(spotId)).then((spot) => {
+          console.log('spot in then ===>', spot);
+          setCountry(spot.country);
+          setAddress(spot.address);
+          setCity(spot.city);
+          setState(spot.state);
+          setLat(spot.lat);
+          setLng(spot.lng);
+          setDesc(spot.description);
+          setTitle(spot.name);
+          setPrice(spot.price);
+
+          const previewImage = spot.previewImage
+            ?? spot.SpotImages.find((img) => img.preview)
+
+          const newImages = [
+            previewImage,
+            ...spot.SpotImages.filter((img) => !img.preview).slice(1, 4),
+          ];
+
+          while (newImages.length < 5) {
+            newImages.push({ url: '', preview: false });
+          }
+
+          console.log('setting images');
+          setImages([...newImages]);
+        });
+      }
+    }
+  }, [dispatch])
+
   useEffect(() => { }, [errors]);
 
   const fillDummyData = () => {
@@ -115,7 +164,13 @@ function NewSpotForm() {
     setDesc('ribbit ribbit ribbit ribbit ribbit ribbit ribbit');
     setTitle('ribbit');
     setPrice(41.30);
-    setImages(['https://i.ibb.co/LCpjhWh/tetangerine.png', '', '', '', '']);
+    setImages([
+      { url: 'https://i.ibb.co/LCpjhWh/tetangerine.png', preview: true },
+      { url: '', preview: false },
+      { url: '', preview: false },
+      { url: '', preview: false },
+      { url: '', preview: false },
+    ]);
   }
 
   const handleSubmit = async (e) => {
@@ -129,35 +184,62 @@ function NewSpotForm() {
       });
     }
 
-    dispatch(
-      createSpotThunk({
-        ownerId: userId,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name: title,
-        description: desc,
-        price,
-      })
-    ).then((res) => {
+    const spot = spots[spotId];
+
+    let thunk;
+    if (spot) {
+      thunk = dispatch(
+        updateSpotThunk({
+          id: spot.id,
+          ownerId: userId,
+          address,
+          city,
+          state,
+          country,
+          lat,
+          lng,
+          name: title,
+          description: desc,
+          price,
+        })
+      );
+    } else {
+      thunk = dispatch(
+        createSpotThunk({
+          ownerId: userId,
+          address,
+          city,
+          state,
+          country,
+          lat,
+          lng,
+          name: title,
+          description: desc,
+          price,
+        })
+      );
+    }
+
+    thunk.then((res) => {
+      console.log('spot in thunk.then ===>', spot);
+      // TODO this uses a pretty gross hack to tell if the spot images are new,
+      // it should be updated to something even slightly more reasonable asap
       const promises = [
-        dispatch(createSpotImageThunk(
-          { spotId: res.id, url: images[0], preview: true },
-        )).catch((eRes) => handleImgFailure(eRes, 0))
+        images[0].spotId
+          ? dispatch(updateSpotImageThunk(images[0]))
+            .catch((eRes) => handleImgFailure(eRes, 0))
+          : dispatch(createSpotImageThunk({ ...images[0], spotId }))
+            .catch((eRes) => handleImgFailure(eRes, 0))
       ];
 
       for (let idx = 1; idx < images.length; idx++) {
-        if (!images[idx]) continue;
+        if (!images[idx].url) continue;
         promises.push(
-          dispatch(createSpotImageThunk({
-            spotId: res.id,
-            url: images[idx],
-            preview: false
-          }))
-            .catch((eRes) => handleImgFailure(eRes, idx))
+          images[idx].spotId
+            ? dispatch(updateSpotImageThunk(images[idx]))
+              .catch((eRes) => handleImgFailure(eRes, idx))
+            : dispatch(createSpotImageThunk({ ...images[idx], spotId }))
+              .catch((eRes) => handleImgFailure(eRes, idx))
         );
       }
 
@@ -173,14 +255,14 @@ function NewSpotForm() {
           dispatch(deleteSpotThunk(res.id));
         }
       });
-    }).catch((eRes) => eRes.json().then((eBody) => {
+    }).catch((eBody) => {
       for (const [err, msg] of Object.entries(eBody.errors)) {
         runningErrors[err] = <ErrorSpan msg={msg} />;
       }
 
       setErrors({ ...runningErrors });
       return;
-    }));
+    });
   };
 
   /**
@@ -189,9 +271,10 @@ function NewSpotForm() {
    * @param { string } value The value to set
    */
   const setImage = (idx, value) => {
+    console.log('images in setImage ===>', images);
     const imgs = [...images];
 
-    imgs[idx] = value;
+    imgs[idx].url = value;
 
     setImages(imgs);
   }
@@ -303,7 +386,7 @@ function NewSpotForm() {
           <label htmlFor="preview-image" className="hidden">Preview Image</label>
           <input
             type="text"
-            value={images[0]}
+            value={images[0]?.url ?? ''}
             name="preview-image"
             onChange={(e) => setImage(0, e.target.value)}
             required
@@ -312,7 +395,7 @@ function NewSpotForm() {
           <label htmlFor="image1" className="hidden">Extra Image 1</label>
           <input
             type="text"
-            value={images[1]}
+            value={images[1]?.url ?? ''}
             name="image1"
             onChange={(e) => setImage(1, e.target.value)}
           />
@@ -320,7 +403,7 @@ function NewSpotForm() {
           <label htmlFor="image2" className="hidden">Extra Image 2</label>
           <input
             type="text"
-            value={images[2]}
+            value={images[2]?.url ?? ''}
             name="image2"
             onChange={(e) => setImage(2, e.target.value)}
           />
@@ -328,7 +411,7 @@ function NewSpotForm() {
           <label htmlFor="image3" className="hidden">Extra Image 3</label>
           <input
             type="text"
-            value={images[3]}
+            value={images[3]?.url ?? ''}
             name="image3"
             onChange={(e) => setImage(3, e.target.value)}
           />
@@ -336,7 +419,7 @@ function NewSpotForm() {
           <label htmlFor="image4" className="hidden">Extra Image 4</label>
           <input
             type="text"
-            value={images[4]}
+            value={images[4]?.url ?? ''}
             name="image4"
             onChange={(e) => setImage(4, e.target.value)}
           />
