@@ -367,7 +367,7 @@ function NewSpotForm() {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
-        {errors.title}
+        {errors.title || errors.name}
         <hr />
         <label htmlFor="price" className="hidden">Price</label>
         <h3>Set a base price for your spot</h3>
