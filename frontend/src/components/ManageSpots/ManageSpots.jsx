@@ -14,7 +14,7 @@ function ManageSpots() {
 
   useEffect(() => {
     dispatch(getUserSpotsThunk()).then(() => setLoaded(true));
-  });
+  }, []);
 
   useEffect(() => { }, [spots]);
 

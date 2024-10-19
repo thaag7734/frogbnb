@@ -107,7 +107,7 @@ export const getSpotDetails = (spot) => {
 export const getUserSpots = (spots) => {
   return {
     type: GET_USER_SPOTS,
-    spots,
+    spots: normalizeSpots(spots),
   };
 };
 
@@ -387,7 +387,7 @@ const spotsReducer = (state = {}, action) => {
       };
     case DELETE_SPOT:
       return Object.fromEntries(
-        Object.entries(state).filter(([id]) => id !== action.id)
+        Object.entries(state).filter(([id]) => id != action.id)
       );
     case UPDATE_SPOT_IMAGE:
       return {
