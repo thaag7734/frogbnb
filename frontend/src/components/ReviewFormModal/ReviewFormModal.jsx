@@ -1,19 +1,24 @@
 import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useModal } from "../../context/Modal";
-import { createSpotReviewThunk } from "../../store/spots";
+import { allReviewsSelector, createReviewThunk, updateReviewThunk } from "../../store/reviews";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import ErrorSpan from "../ErrorSpan/ErrorSpan";
+import { useSelector } from "react-redux";
 
-function ReviewFormModal({ spotId }) {
+function ReviewFormModal({ spotId, reviewId }) {
+  const reviews = useSelector(allReviewsSelector);
+  const spots = useSelector(state => state.spots);
   const [stars, setStars] = useState([false, false, false, false, false]);
   const [hoveredStar, setHoveredStar] = useState(null);
   const [review, setReview] = useState('');
+  const [spot, setSpot] = useState(null);
   const [errors, setErrors] = useState({});
   const { closeModal } = useModal();
   const dispatch = useDispatch();
 
-  const selectStar = (idx) => setStars(stars.map((_, i) => i <= idx));
+  const selectStar = (idx) => setStars([...stars].map((_, i) => i <= idx));
 
   const hoverStar = (idx) => setHoveredStar(idx);
 
@@ -32,14 +37,31 @@ function ReviewFormModal({ spotId }) {
     return starCount;
   }
 
-  useEffect(() => { }, [errors]);
+  useEffect(() => {
+    const thisReview = reviews.find((r) => r.id === reviewId);
+    console.log('thisReview ===>', thisReview);
+
+    setSpot(Object.values(spots).find((s) => s.id === spotId));
+
+    setReview(thisReview?.review ?? '');
+    selectStar(thisReview?.stars ?? 0 - 1);
+  }, [reviews, spots])
+
+  useEffect(() => { console.log('AAAAAAAA') }, [errors, stars]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrors({});
 
-    return dispatch(createSpotReviewThunk(spotId, { review, stars: getStarRating() }))
-      .then(closeModal)
+    // this is deeply cursed but it worked fine (not fine) for updating spots
+    let thunk;
+    if (reviewId) {
+      thunk = dispatch(updateReviewThunk({ review, stars: getStarRating() }));
+    } else {
+      thunk = dispatch(createReviewThunk(spotId, { review, stars: getStarRating() }))
+    }
+
+    thunk.then(closeModal)
       .catch((res) => res.json().then((body) => {
         const backendErrors = {};
 
@@ -56,9 +78,9 @@ function ReviewFormModal({ spotId }) {
       }));
   };
 
-  return (
+  return spot && (
     <>
-      <h1>How was your stay?</h1>
+      <h1>How was your stay at {spot.name}?</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="review" className="hidden">Review</label>
         <textarea

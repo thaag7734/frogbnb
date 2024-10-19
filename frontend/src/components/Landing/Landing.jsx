@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import SpotCard from '../SpotCard/SpotCard.jsx';
 import './Landing.css';
 import { useEffect } from 'react';
 import { getAllSpotsThunk } from '../../store/spots.js';
+import { allReviewsSelector } from '../../store/reviews.js';
 
 function Landing() {
   const spots = useSelector(state => state.spots);
@@ -18,7 +18,10 @@ function Landing() {
       {
         Object.entries(spots).length
           ? Object.values(spots).map((spot) => (
-            <SpotCard key={spot.id} spot={spot} />
+            <SpotCard
+              key={spot.id}
+              spot={spot}
+            />
           ))
           : <h2>Loading spots...</h2>
       }

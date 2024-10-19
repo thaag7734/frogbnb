@@ -221,7 +221,7 @@ function NewSpotForm() {
         images[0].id
           ? dispatch(updateSpotImageThunk(images[0]))
             .catch((eRes) => handleImgFailure(eRes, 0))
-          : dispatch(createSpotImageThunk({ ...images[0], spotId }))
+          : dispatch(createSpotImageThunk({ ...images[0], spotId: res.id }))
             .catch((eRes) => handleImgFailure(eRes, 0))
       ];
 
@@ -234,11 +234,13 @@ function NewSpotForm() {
 
           continue;
         }
+
+        console.log(`images[${idx}].id before pushing promise ===>`, images[idx].id);
         promises.push(
           images[idx].id
             ? dispatch(updateSpotImageThunk(images[idx]))
               .catch((eRes) => handleImgFailure(eRes, idx))
-            : dispatch(createSpotImageThunk({ ...images[idx], spotId }))
+            : dispatch(createSpotImageThunk({ ...images[idx], spotId: res.id }))
               .catch((eRes) => handleImgFailure(eRes, idx))
         );
       }
@@ -256,6 +258,7 @@ function NewSpotForm() {
         }
       });
     }).catch((eBody) => {
+      console.log(eBody);
       for (const [err, msg] of Object.entries(eBody.errors)) {
         runningErrors[err] = <ErrorSpan msg={msg} />;
       }

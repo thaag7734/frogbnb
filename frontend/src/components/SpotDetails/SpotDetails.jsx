@@ -2,14 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import './SpotDetails.css';
 import { useState, useEffect } from "react";
-import { deleteReviewThunk, getSpotDetailsThunk, getSpotReviewsThunk } from "../../store/spots";
+import { getSpotDetailsThunk } from "../../store/spots";
 import { FaStar } from "react-icons/fa";
 import '../../vlib/proto/date.js';
 import '../../vlib/proto/number.js';
-import OpenModalMenuItem from "../Navigation/OpenModalMenuItem.jsx";
 import ReviewFormModal from "../ReviewFormModal/ReviewFormModal.jsx";
 import OpenModalButton from "../OpenModalButton/OpenModalButton.jsx";
 import DeleteReviewModal from "./DeleteReviewModal.jsx";
+import { getSpotReviewsThunk, spotReviewsSelector } from "../../store/reviews.js";
 
 function SpotDetails() {
   const { id } = useParams();
@@ -17,10 +17,10 @@ function SpotDetails() {
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
   const [preview, setPreview] = useState(null);
   const spot = useSelector(state => state.spots[id]);
+  const reviews = useSelector(state => spotReviewsSelector(state, id));
   const session = useSelector(state => state.session);
   const [displayRating, setDisplayRating] = useState(null);
   const [displayReviews, setDisplayReviews] = useState('- reviews');
-  const [reviewErrors, setReviewErrors] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,25 +35,27 @@ function SpotDetails() {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (!spot) return setDisplayRating('-.--');
+    if (!spot || !reviews) return setDisplayRating('-.--');
 
-    setDisplayRating(
-      spot.avgRating == null
-        ? 'New'
-        : parseFloat(spot.avgRating).toDynamic(2, 1)
-    );
+    if (!reviews.length) {
+      setDisplayRating('New');
+    } else {
+      setDisplayRating(reviews.reduce((sum, r) => sum + r.stars, 0)
+        .toDynamic(2, 1)) / reviews.length;
+    }
 
     setDisplayReviews(
-      spot.numReviews === 1
+      reviews.length === 1
         ? '1 review'
-        : spot.numReviews + ' reviews'
+        : reviews.length + ' reviews'
     );
-  }, [spot]);
+  }, [spot, reviews]);
 
   return spotLoaded
-    ? spot
+    ? spot && Object.entries(spot).length
       ? (
         <main>
+          {console.log(spot)}
           <h1>{spot.name}</h1>
           <span className="location">{spot.city}, {spot.state}, {spot.country}</span>
           <div className="spot-images">
@@ -100,14 +102,14 @@ function SpotDetails() {
               <span className="review-count lg">{displayReviews}</span>
             </div>
             {reviewsLoaded
-              ? spot.reviews?.length
+              ? reviews.length
                 ? (
                   <div className="reviews">
-                    {spot.reviews.map((review) => (
+                    {reviews.map((review) => (
                       <div key={review.id} className="review">
                         <div className="review-header">
                           <h3>{review.User.firstName}</h3>
-                          <span className="review-date">
+                          <span className="date">
                             {
                               new Date(review.createdAt).toLocaleString(
                                 'default',

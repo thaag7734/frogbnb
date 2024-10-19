@@ -1,4 +1,4 @@
-import { deleteReviewThunk } from "../../store/spots";
+import { deleteReviewThunk } from "../../store/reviews";
 import ErrorSpan from "../ErrorSpan/ErrorSpan";
 import { useModal } from '../../context/Modal.jsx';
 import { useState } from "react";

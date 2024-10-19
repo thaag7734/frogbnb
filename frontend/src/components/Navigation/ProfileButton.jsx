@@ -6,17 +6,19 @@ import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem.jsx';
 import LoginFormModal from '../LoginFormModal/LoginFormModal.jsx';
 import SignupFormModal from '../SignupFormModal/SignupFormModal.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function ProfileButton({ user }) {
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
+  const navigate = useNavigate();
 
   const logout = (e) => {
     e.preventDefault();
     dispatch(sessionActions.logout());
     setShowMenu(false);
+    navigate('/');
   };
 
   useEffect(() => {
@@ -53,6 +55,9 @@ function ProfileButton({ user }) {
             <li>{user.email}</li>
             <li>
               <Link to="/spots/manage">Manage Spots</Link>
+            </li>
+            <li>
+              <Link to="/reviews/manage">Manage Reviews</Link>
             </li>
             <li>
               <button onClick={logout}>Log Out</button>

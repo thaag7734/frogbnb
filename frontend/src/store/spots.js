@@ -25,26 +25,10 @@ import { csrfFetch } from './csrf.js';
  * @property { string } name The name of the spot
  * @property { string } description The description for the spot
  * @property { number } price The price of the spot
+ * @property { number } [numReviews] The number of Reviews attached to the Spot
  * @property { number } [avgRating] The average star rating of the spot
  * @property { string } [previewImage] The URL for the preview image assigned to the spot
  * @property { SpotImage[] } [SpotImages] Array containing all images attached to the Spot
- */
-
-/**
- * @typedef {{ id: number, url: string }} ReviewImage
- */
-
-/**
- * @typedef { Object } Review
- * @property { number } [id] The ID of the review
- * @property { number } spotId The ID of the spot
- * @property { number } userId The ID of the user who created the review
- * @property { string } review The review text
- * @property { number } stars The star rating on the review
- * @property { string } createdAt The ISO 8601 datetime at which the review was created
- * @property { string } updatedAt The ISO 8601 datetime at which the review was last updated
- * @property { User } User The user who created the review
- * @property { ReviewImage[] } ReviewImages Array containing all images attached to the review
  */
 
 /**
@@ -60,20 +44,31 @@ import { csrfFetch } from './csrf.js';
 const normalizeSpots = (spots) => {
   return spots.reduce((collection, spot) => {
     collection[spot.id] = spot;
+    delete collection[spot.id].numReviews;
+    delete collection[spot.id].avgRating;
     return collection;
   }, {});
 }
 
+/**
+ * Removes the `numReviews` and `avgRating` properties from a Spot and returns the Spot
+ * @param { Spot } spot
+ * @returns { Spot }
+ */
+const stripSpot = (spot) => {
+  delete spot.numReviews;
+  delete spot.avgRating;
+
+  return spot;
+}
+
 const GET_ALL_SPOTS = 'spots/getAllSpots';
 const GET_SPOT_DETAILS = 'spots/getSpotDetails';
-const GET_SPOT_REVIEWS = 'spots/getSpotReviews';
 
 const CREATE_SPOT = 'spots/createSpot';
 const CREATE_SPOT_IMAGE = 'spots/createSpotImage';
-const CREATE_SPOT_REVIEW = 'spots/createSpotReview';
 
 const DELETE_SPOT = 'spots/deleteSpot';
-const DELETE_REVIEW = 'spots/deleteSpotReview';
 const DELETE_SPOT_IMAGE = 'spots/deleteSpotImage';
 
 const UPDATE_SPOT = 'spots/updateSpot';
@@ -100,20 +95,6 @@ export const getSpotDetails = (spot) => {
   return {
     type: GET_SPOT_DETAILS,
     spot,
-  };
-};
-
-/**
- * Add an array of Reviews to a Spot in the state
- * @param { number } spotId The ID of the Spot to add the reviews to
- * @param { Review[] } reviews Array of reviews to add to the Spot in the state
- * @returns {{ type: string, spotId: number, reviews: Review[] }}
- */
-export const getSpotReviews = (spotId, reviews) => {
-  return {
-    type: GET_SPOT_REVIEWS,
-    spotId,
-    reviews,
   };
 };
 
@@ -152,31 +133,6 @@ export const deleteSpot = (id) => {
     id,
   };
 };
-
-/**
- * Add a Review to a Spot in the state
- * @param { number } spotId The ID of the Spot to add the Review to
- * @param { Review } review The Review object to add to the Spot
- * @returns {{ type: string, spotId: number, review: Review }}
- */
-export const createSpotReview = (spotId, review) => {
-  return {
-    type: CREATE_SPOT_REVIEW,
-    spotId,
-    review,
-  };
-};
-
-/**
- * Remove a review from the state
- * @param { Review } review The review to remove
- */
-export const deleteReview = (review) => {
-  return {
-    type: DELETE_REVIEW,
-    review,
-  };
-}
 
 /**
  * Update a Spot in the state
@@ -234,24 +190,10 @@ export const getSpotDetailsThunk = (id) => async (dispatch) => {
 
   if (res.ok) {
     const spot = await res.json();
+    console.log('spot in getSpotDetailsThunk ===>', spot);
     dispatch(getSpotDetails(spot));
 
     return spot;
-  }
-};
-
-/**
- * Send a request to the GET /spots/:id/reviews endpoint and return the reviews
- * @param { number } id The Spot's ID
- */
-export const getSpotReviewsThunk = (id) => async (dispatch) => {
-  const res = await csrfFetch(`/api/spots/${id}/reviews`);
-
-  if (res.ok) {
-    const reviews = await res.json();
-    dispatch(getSpotReviews(id, reviews?.Reviews));
-
-    return reviews;
   }
 };
 
@@ -308,47 +250,6 @@ export const deleteSpotThunk = (id) => async (dispatch) => {
   }
 
   dispatch(deleteSpot(id));
-
-  return await res.json();
-}
-
-/**
- * Send a request to the POST /spots/:spotId/reviews endpoint and return the review
- * @param { number } spotId The ID of the Spot to add the review to
- * @param { Review } review The Review object to be created
- */
-export const createSpotReviewThunk = (spotId, review) => async (dispatch) => {
-  const res = await csrfFetch(`/api/spots/${spotId}/reviews`, {
-    method: 'POST',
-    body: JSON.stringify(review),
-  });
-
-  const body = await res.json();
-
-  if (body.errors) return body;
-
-  console.log('body in thunk ===>', body);
-
-  dispatch(createSpotReview(spotId, body));
-
-  return body;
-}
-
-/**
- * Send a request to the DELETE /reviews/:reviewId endpoint and return the success message
- * or errors if present
- * @param { Review } review The review to be deleted
- */
-export const deleteReviewThunk = (review) => async (dispatch) => {
-  const res = await csrfFetch(`/api/reviews/${review.id}`, {
-    method: 'DELETE',
-  });
-
-  if (res.status >= 400) {
-    return await res.json();
-  }
-
-  dispatch(deleteReview(review));
 
   return await res.json();
 }
@@ -431,15 +332,7 @@ const spotsReducer = (state = {}, action) => {
         ...state,
         [action.spot.id]: {
           ...state[action.spot.id],
-          ...action.spot,
-        },
-      };
-    case GET_SPOT_REVIEWS:
-      return {
-        ...state,
-        [action.spotId]: {
-          ...state[action.spotId],
-          reviews: action.reviews,
+          ...stripSpot(action.spot),
         },
       };
     case CREATE_SPOT:
@@ -447,7 +340,7 @@ const spotsReducer = (state = {}, action) => {
       return {
         ...state,
         [action.spot.id]: {
-          ...action.spot,
+          ...stripSpot(action.spot),
         },
       };
     case CREATE_SPOT_IMAGE:
@@ -465,31 +358,6 @@ const spotsReducer = (state = {}, action) => {
       return Object.fromEntries(
         Object.entries(state).filter(([id]) => id !== action.id)
       );
-    case CREATE_SPOT_REVIEW:
-      return {
-        ...state,
-        [action.spotId]: {
-          ...state[action.spotId],
-          numReviews: ++state[action.spotId].numReviews,
-          reviews: [
-            ...state[action.spotId]?.reviews,
-            action.review,
-          ],
-          avgRating: calculateAvgStarRating(state[action.spotId].reviews),
-        },
-      };
-    case DELETE_REVIEW:
-      return {
-        ...state,
-        [action.review.spotId]: {
-          ...state[action.review.spotId],
-          numReviews: ++state[action.review.spotId].numReviews,
-          reviews: state[action.review.spotId].reviews.filter(
-            (rvw) => rvw.id !== action.review.id
-          ),
-          avgRating: calculateAvgStarRating(state[action.review.spotId].reviews),
-        }
-      }
     case UPDATE_SPOT_IMAGE:
       return {
         ...state,

@@ -7,6 +7,7 @@ import SpotDetails from './components/SpotDetails/SpotDetails.jsx';
 import * as sessionActions from './store/session';
 import NewSpotForm from './components/NewSpotForm/NewSpotForm.jsx';
 import ManageSpots from './components/ManageSpots/ManageSpots.jsx';
+import ManageReviews from './components/ManageReviews/ManageReviews.jsx';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,15 @@ const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: '/reviews',
+        children: [
+          {
+            path: 'manage',
+            element: <ManageReviews />
+          }
+        ]
       }
     ],
   },
