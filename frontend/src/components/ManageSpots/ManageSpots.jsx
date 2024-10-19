@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
 import SpotCard from "../SpotCard/SpotCard";
 import { useState, useEffect } from "react";
-import { getAllSpotsThunk } from "../../store/spots";
+import { getUserSpotsThunk } from "../../store/spots";
 import { useDispatch } from "react-redux";
 
 function ManageSpots() {
@@ -14,36 +13,36 @@ function ManageSpots() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!Object.entries(spots).length) {
-      // TODO this needs to be changed to a "get user spots" action that hits
-      // the /api/spots/current endpoint
-      dispatch(getAllSpotsThunk()).then(() => setLoaded(true));
-    } else {
-      setLoaded(true);
-    }
+    dispatch(getUserSpotsThunk()).then(() => setLoaded(true));
   });
 
   useEffect(() => { }, [spots]);
 
-  return (
-    <main className="manage-spots">
-      <div className="header">
-        <h1>Manage Your Spots</h1>
-        <button onClick={() => navigate('/spots/new')}>Create a New Spot</button>
-      </div>
-      {
-        user
-          ? Object.entries(spots).length
-            ? Object.values(spots).map((spot) => spot.ownerId === user.id && (
-              <SpotCard key={spot.id} spot={spot} manage={true} />
-            ))
-            : loaded
-              ? <p>You don't have any spots! Click the button above to create a new one.</p>
-              : <h2>Loading spots...</h2>
-          : <p>Please log in to view and manage your spots.</p>
-      }
-    </main>
-  )
+  return Object.entries(spots).length && loaded
+    ? (
+      <main className="manage-spots">
+        <div className="header">
+          <h1>Manage Your Spots</h1>
+          <button onClick={() => navigate('/spots/new')}>Create a New Spot</button>
+        </div>
+        {
+          user
+            ? Object.entries(spots).length
+              ? Object.values(spots).map((spot) => spot.ownerId === user.id && (
+                <SpotCard key={spot.id} spot={spot} manage={true} />
+              ))
+              : loaded
+                ? <p>You don't have any spots! Click the button above to create a new one.</p>
+                : <h2>Loading spots...</h2>
+            : <p>Please log in to view and manage your spots.</p>
+        }
+      </main>
+    ) : !loaded
+      ? (
+        <h1>Loading your spots...</h1>
+      ) : (
+        <h1>You don't have any spots!</h1>
+      )
 }
 
 export default ManageSpots;

@@ -64,6 +64,7 @@ const stripSpot = (spot) => {
 
 const GET_ALL_SPOTS = 'spots/getAllSpots';
 const GET_SPOT_DETAILS = 'spots/getSpotDetails';
+const GET_USER_SPOTS = 'spots/getUserSpots';
 
 const CREATE_SPOT = 'spots/createSpot';
 const CREATE_SPOT_IMAGE = 'spots/createSpotImage';
@@ -95,6 +96,18 @@ export const getSpotDetails = (spot) => {
   return {
     type: GET_SPOT_DETAILS,
     spot,
+  };
+};
+
+/**
+ * Add all the current user's Spots to the state
+ * @param { Spot[] } spots
+ * @returns {{ type: string, spots: Spot[] }}
+ */
+export const getUserSpots = (spots) => {
+  return {
+    type: GET_USER_SPOTS,
+    spots,
   };
 };
 
@@ -190,12 +203,29 @@ export const getSpotDetailsThunk = (id) => async (dispatch) => {
 
   if (res.ok) {
     const spot = await res.json();
-    console.log('spot in getSpotDetailsThunk ===>', spot);
+
     dispatch(getSpotDetails(spot));
 
     return spot;
   }
 };
+
+/**
+ * Send a request to the GET /spots/current endpoint and return the spots as an array
+ */
+export const getUserSpotsThunk = () => async (dispatch) => {
+  const res = await csrfFetch(`/api/spots/current`);
+
+  if (res.ok) {
+    const body = await res.json();
+
+    dispatch(getUserSpots(body.Spots));
+
+    return body.Spots;
+  }
+
+  return body;
+}
 
 /**
  * Send a request to the POST /spots endpoint and return the new Spot
@@ -326,6 +356,7 @@ const calculateAvgStarRating = (reviews) => {
 const spotsReducer = (state = {}, action) => {
   switch (action.type) {
     case GET_ALL_SPOTS:
+    case GET_USER_SPOTS:
       return { ...state, ...action.spots };
     case GET_SPOT_DETAILS:
       return {
