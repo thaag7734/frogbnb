@@ -16,13 +16,13 @@ function DeleteSpotModal({ spotId }) {
   }
 
   return (
-    <>
+    <div className="delete-spot-modal">
       <h1>Confirm Delete</h1>
       <p>Are you sure you want to remove this spot from the listings?</p>
       <button onClick={handleDelete}>Yes (Delete Spot)</button>
       <button onClick={closeModal}>No (Keep Spot)</button>
       {error}
-    </>
+    </div>
   );
 }
 

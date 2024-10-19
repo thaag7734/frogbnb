@@ -14,7 +14,7 @@ function Landing() {
   }, [dispatch]);
 
   return (
-    <main>
+    <main className="landing">
       {
         Object.entries(spots).length
           ? Object.values(spots).map((spot) => (

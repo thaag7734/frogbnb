@@ -22,7 +22,7 @@ function ManageReviews() {
   }, [reviews]);
 
   return (
-    <main>
+    <main className="manage-reviews">
       <h1>Manage Reviews</h1>
       {reviews.map((review) => (
         <div key={review.id} className="review">

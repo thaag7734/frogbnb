@@ -26,7 +26,7 @@ function ManageSpots() {
   useEffect(() => { }, [spots]);
 
   return (
-    <main>
+    <main className="manage-spots">
       <div className="header">
         <h1>Manage Your Spots</h1>
         <button onClick={() => navigate('/spots/new')}>Create a New Spot</button>

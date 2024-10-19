@@ -8,7 +8,7 @@ function Navigation({ isLoaded }) {
   const sessionUser = useSelector(state => state.session.user);
 
   return (
-    <ul>
+    <ul className="nav">
       <li>
         <NavLink to="/">Home</NavLink>
       </li>

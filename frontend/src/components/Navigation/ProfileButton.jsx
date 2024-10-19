@@ -43,7 +43,7 @@ function ProfileButton({ user }) {
 
   return (
     <>
-      <button onClick={handleProfileButtonClick}>
+      <button className="profile-button" onClick={handleProfileButtonClick}>
         <RxHamburgerMenu />
         <IoPersonCircleSharp />
       </button>

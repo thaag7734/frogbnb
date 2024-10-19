@@ -282,8 +282,8 @@ function NewSpotForm() {
   }
 
   return (
-    <main>
-      <div className='form-header'>
+    <main className="new-spot-form">
+      <div className="form-header">
         <h1>Create a New Spot</h1>
         <h2>Where&#39;s your place located?</h2>
         <p>Guests will only get your exact address once they book a reservation</p>

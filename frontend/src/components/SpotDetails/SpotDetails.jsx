@@ -54,7 +54,7 @@ function SpotDetails() {
   return spotLoaded
     ? spot && Object.entries(spot).length
       ? (
-        <main>
+        <main className="spot-details">
           {console.log(spot)}
           <h1>{spot.name}</h1>
           <span className="location">{spot.city}, {spot.state}, {spot.country}</span>

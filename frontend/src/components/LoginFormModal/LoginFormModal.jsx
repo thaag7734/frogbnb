@@ -23,7 +23,7 @@ function LoginFormModal() {
   };
 
   return (
-    <>
+    <div className="login-modal">
       <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
         <label>
@@ -49,7 +49,7 @@ function LoginFormModal() {
         {errors.credential && <p>{errors.credential}</p>}
         <button type="submit" data-testid="login-button">Log In</button>
       </form>
-    </>
+    </div>
   );
 }
 

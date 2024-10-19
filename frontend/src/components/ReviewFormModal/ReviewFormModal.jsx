@@ -79,7 +79,7 @@ function ReviewFormModal({ spotId, reviewId }) {
   };
 
   return spot && (
-    <>
+    <div className="review-modal">
       <h1>How was your stay at {spot.name}?</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="review" className="hidden">Review</label>
@@ -120,7 +120,7 @@ function ReviewFormModal({ spotId, reviewId }) {
           disabled={review.length < 10 || !stars.find((star) => star)}
         >Submit Your Review</button>
       </form >
-    </>
+    </div>
   );
 }
 
