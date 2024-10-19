@@ -15,3 +15,12 @@ a {
 .noresize {
   resize: none;
 }
+
+/* palette: https://coolors.co/e5f4e3-0d1821-a31621-058c42-1b98e0 */
+:root {
+  --bg-light: #e5f4e3;
+  --bg-dark: #0d1821;
+  --red: #a31621;
+  --green: #058c42;
+  --blue: #1b98e0;
+}
