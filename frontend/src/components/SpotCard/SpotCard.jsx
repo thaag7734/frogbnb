@@ -1,10 +1,10 @@
 import { FaStar } from "react-icons/fa";
 import './SpotCard.css';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../../vlib/proto/number.js';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import OpenModalButton from "../OpenModalButton/OpenModalButton.jsx";
-import DeleteSpotModal from "../ManageSpots/DeleteSpotModal.jsx";
+import DeleteSpotModal from "../DeleteSpotModal/DeleteSpotModal.jsx";
 import { useSelector } from "react-redux";
 import { getSpotReviewsThunk, spotReviewsSelector } from "../../store/reviews.js";
 import { useDispatch } from "react-redux";
@@ -18,38 +18,41 @@ import { useDispatch } from "react-redux";
  * @returns { Component }
  */
 function SpotCard({ spot, manage }) {
-  const [error, setError] = useState('');
   const reviews = useSelector(state => spotReviewsSelector(state, spot.id))
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleUpdate = (e) => {
+    e.stopPropagation();
+
     navigate(`/spots/${spot.id}/update`);
+  }
+
+  const navToSpot = () => {
+    navigate(`/spots/${spot.id}`);
   }
 
   useEffect(() => { dispatch(getSpotReviewsThunk(spot.id)) }, []);
 
   return (
-    <div className="spot-card">
-      <Link to={`/spots/${spot.id}`}>
-        <div className="preview">
-          <img src={spot.previewImage} alt={spot.name} />
-        </div>
-        <div className="loc-rvw">
-          <span>{spot.city}, {spot.state}</span>
-          <span>
-            <FaStar /> {
-              reviews.length
-                ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length)
-                  .toDynamic(2, 1)
-                : 'New'
-            }
-          </span>
-        </div>
-        <div className="spot-price">
-          <span className="money">${spot.price.toFixed(2)}</span><span> / night</span>
-        </div>
-      </Link>
+    <div className="spot-card" onClick={navToSpot}>
+      <div className="preview">
+        <img src={spot.previewImage} alt={spot.name} />
+      </div>
+      <div className="loc-rvw">
+        <span>{spot.city}, {spot.state}</span>
+        <span>
+          <FaStar /> {
+            reviews.length
+              ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length)
+                .toDynamic(2, 1)
+              : 'New'
+          }
+        </span>
+      </div>
+      <div className="spot-price">
+        <span className="money">${parseFloat(spot.price).toFixed(2)}</span><span> / night</span>
+      </div>
       {
         manage && (
           <>
@@ -61,7 +64,6 @@ function SpotCard({ spot, manage }) {
                 buttonText="Delete"
               />
             </div>
-            {error}
           </>
         )
       }

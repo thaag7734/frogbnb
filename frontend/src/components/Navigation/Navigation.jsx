@@ -10,7 +10,7 @@ function Navigation({ isLoaded }) {
   return (
     <ul className="nav">
       <li>
-        <NavLink to="/">Home</NavLink>
+        <NavLink to="/"><img src="/logo_square.svg" alt="Home" title="Home" /></NavLink>
       </li>
       {isLoaded && (
         <li>

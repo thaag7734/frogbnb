@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import ErrorSpan from '../ErrorSpan/ErrorSpan.jsx';
+import './NewSpotForm.css';
 
 function NewSpotForm() {
   // java programming simulator
@@ -17,7 +18,7 @@ function NewSpotForm() {
   const [lng, setLng] = useState('');
   const [desc, setDesc] = useState('');
   const [title, setTitle] = useState('');
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState('');
   const { id: spotId } = useParams();
   // NOTE the backend needs to be updated to store a max of 5 SpotImages per Spot
   const [images, setImages] = useState([
@@ -285,104 +286,135 @@ function NewSpotForm() {
     <main className="new-spot-form">
       <div className="form-header">
         <h1>Create a New Spot</h1>
+        <button onClick={fillDummyData}>Fill Dummy Data</button>
         <h2>Where&#39;s your place located?</h2>
         <p>Guests will only get your exact address once they book a reservation</p>
       </div>
-      <button onClick={fillDummyData}>Fill Dummy Data</button>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="country">Country</label>
-        {errors.country}
-        <input
-          type="text"
-          value={country}
-          name="country"
-          onChange={(e) => setCountry(e.target.value)}
-          required
-        />
-        <label htmlFor="address">Street Address</label>
-        {errors.address}
-        <input
-          type="text"
-          value={address}
-          name="address"
-          onChange={(e) => setAddress(e.target.value)}
-          required
-        />
-        <label htmlFor="city">City</label>
-        {errors.city}
-        <input
-          type="text"
-          value={city}
-          name="city"
-          onChange={(e) => setCity(e.target.value)}
-          required
-        />
-        <label htmlFor="state">State</label>
-        {errors.state}
-        <input
-          type="text"
-          value={state}
-          name="state"
-          onChange={(e) => setState(e.target.value)}
-          required
-        />
-        <label htmlFor="lat">Latitude</label>
-        {errors.lat}
-        <input
-          type="text"
-          value={lat}
-          name="lat"
-          onChange={(e) => setLat(e.target.value)}
-          required
-        />
-        <label htmlFor="lng">Longitude</label>
-        {errors.lng}
-        <input
-          type="text"
-          value={lng}
-          name="lng"
-          onChange={(e) => setLng(e.target.value)}
-          required
-        />
+        <div className='loc-section'>
+          <div className="input-group ctry">
+            <label htmlFor="country">Country</label>
+            {errors.country}
+            <input
+              type="text"
+              value={country}
+              name="country"
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="Country"
+              required
+            />
+          </div>
+          <div className="input-group addr">
+            <label htmlFor="address">Street Address</label>
+            {errors.address}
+            <input
+              type="text"
+              value={address}
+              name="address"
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Address"
+              required
+            />
+          </div>
+          <div className="input-group city">
+            <label htmlFor="city">City</label>
+            {errors.city}
+            <input
+              type="text"
+              value={city}
+              name="city"
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="City"
+              required
+            />
+          </div>
+          <div className="input-group stat">
+            <label htmlFor="state">State</label>
+            {errors.state}
+            <input
+              type="text"
+              value={state}
+              name="state"
+              onChange={(e) => setState(e.target.value)}
+              placeholder="STATE"
+              required
+            />
+          </div>
+          <div className="input-group lat">
+            <label htmlFor="lat">Latitude</label>
+            {errors.lat}
+            <input
+              type="text"
+              value={lat}
+              name="lat"
+              onChange={(e) => setLat(e.target.value)}
+              placeholder="Latitude"
+              required
+            />
+          </div>
+          <div className="input-group lng">
+            <label htmlFor="lng">Longitude</label>
+            {errors.lng}
+            <input
+              type="text"
+              value={lng}
+              name="lng"
+              onChange={(e) => setLng(e.target.value)}
+              placeholder="Longitude"
+              required
+            />
+          </div>
+        </div>
         <hr />
-        <label htmlFor="desc">Description</label>
-        <h3>Describe your place to guests</h3>
-        <p>Mention the best features of your space, any special amenities like fast wifi or parking, and what you love about the neighborhood.</p>
-        <textarea
-          className="noresize"
-          value={desc}
-          name="desc"
-          onChange={(e) => setDesc(e.target.value)}
-          required
-        />
-        {errors.desc ?? errors.description}
+        <div className="desc-section">
+          <label htmlFor="desc" className="hidden">Description</label>
+          <h3>Describe your place to guests</h3>
+          <p>Mention the best features of your space, any special amenities like fast wifi or parking, and what you love about the neighborhood.</p>
+          <textarea
+            className="noresize"
+            value={desc}
+            name="desc"
+            onChange={(e) => setDesc(e.target.value)}
+            placeholder="Please write at least 30 characters"
+            required
+          />
+          {errors.desc ?? errors.description}
+        </div>
         <hr />
-        <label htmlFor="title" className="hidden">Title</label>
-        <h3>Create a title for your spot</h3>
-        <p>Catch guests&#39; attention with a spot title that highlights what makes your place special.</p>
-        <input
-          type="text"
-          value={title}
-          name="title"
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        {errors.title || errors.name}
+        <div className="title-section">
+          <label htmlFor="title" className="hidden">Title</label>
+          <h3>Create a title for your spot</h3>
+          <p>Catch guests&#39; attention with a spot title that highlights what makes your place special.</p>
+          <input
+            type="text"
+            value={title}
+            name="title"
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Name of your spot"
+            required
+          />
+          {errors.title || errors.name}
+        </div>
         <hr />
-        <label htmlFor="price" className="hidden">Price</label>
-        <h3>Set a base price for your spot</h3>
-        <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
-        <span className="money">$</span>
-        <input
-          type="number"
-          value={price}
-          name="price"
-          onChange={(e) => setPrice(e.target.value)}
-          required
-        />
-        {errors.price}
+        <div className="price-section">
+          <label htmlFor="price" className="hidden">Price</label>
+          <h3>Set a base price for your spot</h3>
+          <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
+          <div class="input-group">
+            <span className="money">$</span>
+            <input
+              type="text"
+              value={price}
+              name="price"
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Price per night (USD)"
+              required
+            />
+          </div>
+          {errors.price}
+        </div>
         <hr />
-        <div className="image-urls">
+        <div className="img-section">
           <h3>Liven up your spot with photos</h3>
           <p>Submit a link to at least one photo to publish your spot.</p>
           <label htmlFor="preview-image" className="hidden">Preview Image</label>
@@ -391,42 +423,52 @@ function NewSpotForm() {
             value={images[0]?.url ?? ''}
             name="preview-image"
             onChange={(e) => setImage(0, e.target.value)}
+            placeholder="Preview Image URL"
             required
           />
           {errors.images[0]}
+          <br />
           <label htmlFor="image1" className="hidden">Extra Image 1</label>
           <input
             type="text"
             value={images[1]?.url ?? ''}
             name="image1"
             onChange={(e) => setImage(1, e.target.value)}
+            placeholder="Image URL"
           />
           {errors.images[1]}
+          <br />
           <label htmlFor="image2" className="hidden">Extra Image 2</label>
           <input
             type="text"
             value={images[2]?.url ?? ''}
             name="image2"
             onChange={(e) => setImage(2, e.target.value)}
+            placeholder="Image URL"
           />
           {errors.images[2]}
+          <br />
           <label htmlFor="image3" className="hidden">Extra Image 3</label>
           <input
             type="text"
             value={images[3]?.url ?? ''}
             name="image3"
             onChange={(e) => setImage(3, e.target.value)}
+            placeholder="Image URL"
           />
           {errors.images[3]}
+          <br />
           <label htmlFor="image4" className="hidden">Extra Image 4</label>
           <input
             type="text"
             value={images[4]?.url ?? ''}
             name="image4"
             onChange={(e) => setImage(4, e.target.value)}
+            placeholder="Image URL"
           />
           {errors.images[4]}
         </div>
+        <hr />
         <button type="submit">Create Spot</button>
       </form >
     </main>

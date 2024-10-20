@@ -1,0 +1,122 @@
+.new-spot-form {
+  margin: 15px auto;
+  width: 25%;
+
+  & hr {
+    margin: 5px 0;
+  }
+
+  & input,
+  & textarea {
+    margin: 8px 0;
+    padding: 3px 5px;
+    width: 100%;
+    border-radius: 0;
+    color: inherit;
+    background-color: var(--bg-dark);
+    border: 2px inset var(--border-color);
+    filter: brightness(70%);
+  }
+
+  & .input-group>label:first-child::before {
+    content: '';
+  }
+
+  & .input-group>label::after,
+  & .input-group>label::before {
+    content: '\A';
+    white-space: pre;
+  }
+
+  .loc-section {
+    grid-area: loc;
+    display: grid;
+    grid-template:
+      'ctry ctry ctry ctry'
+      'addr addr addr addr'
+      'city city city stat'
+      'lat lat lng lng';
+
+    >.input-group {
+      margin: 2px 0px;
+    }
+
+    >.input-group.ctry {
+      grid-area: ctry;
+    }
+
+    >.input-group.addr {
+      grid-area: addr;
+    }
+
+    >.input-group.city {
+      grid-area: city;
+
+      &::after {
+        content: ' ,';
+      }
+
+      >input {
+        width: 95%;
+      }
+    }
+
+    >.input-group.stat {
+      grid-area: stat;
+    }
+
+    >.input-group.lat {
+      grid-area: lat;
+
+      &::after {
+        content: ' ,';
+      }
+
+      >input {
+        width: 95%;
+      }
+    }
+
+    >.input-group.lng {
+      grid-area: lng;
+    }
+  }
+
+  .desc-section {
+    width: 100%;
+
+    >textarea {
+      width: 100%;
+    }
+  }
+
+  .price-section {
+    >.input-group {
+      display: flex;
+      align-items: center;
+
+      >input {
+        width: 95%;
+        justify-self: flex-end;
+      }
+
+      >span {
+        margin: 0px 5px;
+      }
+    }
+  }
+
+  & p {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+
+  & h3 {
+    font-size: 20px;
+  }
+
+  & button {
+    width: 100%;
+    margin: 15px 0;
+  }
+}
