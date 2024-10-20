@@ -47,7 +47,7 @@ function SpotCard({ spot, manage }) {
           </span>
         </div>
         <div className="spot-price">
-          <span className="money">${spot.price}</span><span>/night</span>
+          <span className="money">${spot.price.toFixed(2)}</span><span> / night</span>
         </div>
       </Link>
       {
