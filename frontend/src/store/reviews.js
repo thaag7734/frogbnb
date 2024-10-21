@@ -157,6 +157,7 @@ export const createReviewThunk = (spotId, review) => async (dispatch) => {
  * @param { Review } review The updated Review object to persist in the db
  */
 export const updateReviewThunk = (review) => async (dispatch) => {
+  console.log('review in URT ===>', review);
   const res = await csrfFetch(`/api/reviews/${review.id}`, {
     method: 'PUT',
     body: JSON.stringify(review),
@@ -164,7 +165,9 @@ export const updateReviewThunk = (review) => async (dispatch) => {
 
   if (res.ok) {
     const newReview = await res.json();
-    dispatch(updateReview(newReview));
+    //
+    // backend doesn't return the User key so we need to keep the old one around
+    dispatch(updateReview({ ...review, ...newReview }));
 
     return newReview;
   }
@@ -205,8 +208,6 @@ export const spotReviewsSelector = createSelector(
 export const userReviewsSelector = createSelector(
   [(state) => state.reviews, (_state, userId) => userId],
   (reviews, userId) => {
-    console.log('reviews ===>', reviews);
-    console.log('userId ===>', userId);
     return Object.values(reviews).filter((r) => r.userId === userId)
   }
 );

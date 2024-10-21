@@ -10,67 +10,27 @@
 .spot-listings {
   display: grid;
   width: 100%;
-  grid-template:
-    '. . . .'
-    '. . . .'
-    '. . . .'
-    '. . . .'
-    '. . . .'
-    '. . . .';
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, auto);
 
+  /* i don't really like that this has an extra space */
+  /* but 4-item rows look terrible at this width */
+  /* and 2-item rows are spaced too far apart */
   @media screen and (max-width: 1050px) {
-    grid-template:
-      '. . .'
-      '. . .'
-      '. . .'
-      '. . .'
-      '. . .'
-      '. . .'
-      '. . .'
-      '. . .';
-    /*
-     * this has an extra space which i don't really like
-     * but 4-item rows look terrible at this width
-     * and 2-item rows are spaced too far apart
-     */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(8, auto);
   }
 
   @media screen and (max-width: 768px) {
-    grid-template:
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .'
-      '. .';
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(10, auto);
   }
 
+  /* it might be worth displaying fewer cards on */
+  /* small displays, a column of 20 is a lot of */
+  /* scrolling */
   @media screen and (max-width: 500px) {
-    grid-template:
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.'
-      '.';
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(20, auto);
   }
 }

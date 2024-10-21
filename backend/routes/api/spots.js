@@ -126,6 +126,9 @@ router.get('/',
             model: SpotImage, // Include associated images
             attributes: ['url'], // Get image URL
             where: { preview: true },
+            order: [
+              ['createdAt', 'DESC'],
+            ],
             required: false,
             duplicating: false,
           },

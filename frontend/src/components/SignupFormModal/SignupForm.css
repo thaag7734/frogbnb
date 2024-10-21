@@ -1,0 +1,12 @@
+.signup-modal {
+  >form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+
+    >button {
+      margin: 10px 0;
+      width: 100%;
+    }
+  }
+}

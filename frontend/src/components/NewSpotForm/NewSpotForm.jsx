@@ -152,21 +152,24 @@ function NewSpotForm() {
   useEffect(() => { }, [errors]);
 
   const fillDummyData = () => {
-    setCountry('USA');
-    setAddress('123 Ribbit Rd');
-    setCity('Frog Island');
-    setState('NC');
+    setCountry('The Ribbit Realm');
+    setAddress('413 Amphibian Ave');
+    setCity('Lilypond');
+    setState('Frogston');
     setLat('36.1404343');
     setLng('-76.1249702');
-    setDesc('ribbit ribbit ribbit ribbit ribbit ribbit ribbit');
-    setTitle('ribbit');
-    setPrice(41.30);
+    setDesc(
+      'A cozy spot deep in the Frogwood Forest in Lilypond. Plenty of water to swim in'
+      + ' and tons of tasty bugs to snack on. Great spot for the whole family!'
+    );
+    setTitle('Frogwood Lake');
+    setPrice('61.20');
     setImages([
-      { id: images[0].id, url: 'https://i.ibb.co/LCpjhWh/tetangerine.png', preview: true },
-      { id: images[1].id, url: '', preview: false },
-      { id: images[2].id, url: '', preview: false },
-      { id: images[3].id, url: '', preview: false },
-      { id: images[4].id, url: '', preview: false },
+      { id: images[0].id, url: 'https://i.ibb.co/QP1F6C3/lp4.jpg', preview: true },
+      { id: images[1].id, url: 'https://i.ibb.co/Rb41Y4n/lp5.jpg', preview: false },
+      { id: images[2].id, url: 'https://i.ibb.co/PZqZf2M/lp1.jpg', preview: false },
+      { id: images[3].id, url: 'https://i.ibb.co/0J7bv8Q/lp3.jpg', preview: false },
+      { id: images[4].id, url: 'https://i.ibb.co/6myZDXS/lp2.jpg', preview: false },
     ]);
   }
 
@@ -285,7 +288,7 @@ function NewSpotForm() {
   return (
     <main className="new-spot-form">
       <div className="form-header">
-        <h1>Create a New Spot</h1>
+        <h1>{spotId ? 'Update Your' : 'Create a New'} Spot</h1>
         <button onClick={fillDummyData}>Fill Dummy Data</button>
         <h2>Where&#39;s your place located?</h2>
         <p>Guests will only get your exact address once they book a reservation</p>
@@ -336,7 +339,7 @@ function NewSpotForm() {
               value={state}
               name="state"
               onChange={(e) => setState(e.target.value)}
-              placeholder="STATE"
+              placeholder="State"
               required
             />
           </div>
@@ -400,7 +403,7 @@ function NewSpotForm() {
           <label htmlFor="price" className="hidden">Price</label>
           <h3>Set a base price for your spot</h3>
           <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
-          <div class="input-group">
+          <div className="input-group">
             <span className="money">$</span>
             <input
               type="text"
@@ -469,7 +472,7 @@ function NewSpotForm() {
           {errors.images[4]}
         </div>
         <hr />
-        <button type="submit">Create Spot</button>
+        <button type="submit">{spotId ? 'Update' : 'Create'} Spot</button>
       </form >
     </main>
   )

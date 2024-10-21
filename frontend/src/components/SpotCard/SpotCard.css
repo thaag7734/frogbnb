@@ -32,7 +32,7 @@
     border-radius: inherit;
   }
 
-  & .money {
-    font-weight: bold;
+  & button {
+    margin: 5px;
   }
 }

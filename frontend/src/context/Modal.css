@@ -18,7 +18,11 @@
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-#modal-content {
+.modal-content {
   position: absolute;
-  background-color: white;
+  width: 385px;
+  background-color: var(--bg-dark);
+  padding: 15px;
+  border: 4px outset var(--border-color);
+  border-radius: 15px;
 }

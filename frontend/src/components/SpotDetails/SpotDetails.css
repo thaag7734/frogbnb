@@ -1,0 +1,128 @@
+.spot-details {
+  min-height: 100vh;
+  width: 70%;
+  margin: 15px auto;
+
+  @media screen and (max-width: 990px) {
+    width: 80%;
+  }
+
+  @media screen and (max-width: 860px) {
+    width: 90%;
+  }
+
+  @media screen and (max-width: 680px) {
+    width: 100%;
+    padding: 15px;
+  }
+
+  & .lg {
+    font-size: 20px;
+  }
+
+  >.spot-images {
+    max-width: 100%;
+    display: flex;
+    margin: 10px 0;
+
+    >.preview {
+      aspect-ratio: 1 / 1;
+      margin-right: 10px;
+    }
+
+    >.preview,
+    >.img-grid {
+      max-width: 50%;
+    }
+
+    >.img-grid {
+      display: grid;
+      grid-template:
+        '. .'
+        '. .';
+      gap: 10px;
+    }
+
+    & img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+    }
+  }
+
+  >.details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+
+    >.desc {
+      margin-right: 10px;
+
+      >p {
+        text-indent: 1.5em;
+      }
+    }
+
+    >.reserve-card {
+      border: 3px outset var(--border-color);
+      border-radius: 15px;
+      padding: 20px;
+      min-width: 345px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: fit-content;
+
+      @media screen and (max-width: 850px) {
+        min-width: 250px;
+        font-size: 14px;
+      }
+
+      @media screen and (max-width: 680px) {
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      @media screen and (max-width: 600px) {
+        min-width: 185px;
+      }
+
+      >.summary {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      >.reserve-btn {
+        width: 100%;
+      }
+    }
+  }
+
+  .review-container {
+    >.rating-summary {
+      margin: 10px 0;
+    }
+
+    >.post-review {
+      >button {
+        margin: 10px 0;
+      }
+    }
+
+    >.reviews {
+      >.review {
+        >p {
+          margin: 10px 0;
+        }
+
+        >button {
+          &:first-of-type {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+}

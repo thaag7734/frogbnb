@@ -408,9 +408,9 @@ const spotsReducer = (state = {}, action) => {
         [action.image.spotId]: {
           ...state[action.image.spotId],
           SpotImages: [
-            ...state[action.image.spotId]
-              ?.SpotImages ?? []
-                ?.filter((i) => i.id !== action.image.id),
+            ...(state[action.image.spotId]
+              ?.SpotImages ?? [])
+              .filter((i) => i.id !== action.image.id),
           ],
         },
       };

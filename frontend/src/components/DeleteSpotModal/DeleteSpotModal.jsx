@@ -3,6 +3,7 @@ import ErrorSpan from "../ErrorSpan/ErrorSpan";
 import { useModal } from '../../context/Modal.jsx';
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import './DeleteSpotModal.css';
 
 function DeleteSpotModal({ spotId }) {
   const [error, setError] = useState(null);
@@ -16,11 +17,13 @@ function DeleteSpotModal({ spotId }) {
   }
 
   return (
-    <div className="delete-spot-modal">
+    <div className="delete-spot-modal modal-content">
       <h1>Confirm Delete</h1>
       <p>Are you sure you want to remove this spot from the listings?</p>
-      <button onClick={handleDelete}>Yes (Delete Spot)</button>
-      <button onClick={closeModal}>No (Keep Spot)</button>
+      <div class="buttons">
+        <button className="delete-btn" onClick={handleDelete}>Yes (Delete Spot)</button>
+        <button onClick={closeModal}>No (Keep Spot)</button>
+      </div>
       {error}
     </div>
   );

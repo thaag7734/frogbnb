@@ -7,31 +7,24 @@ const { Op } = require('sequelize');
 
 const userSeedData = [
   {
-    firstName: 'Demo',
-    lastName: 'Lition',
-    email: 'demo@user.io',
-    username: 'Demo-lition',
+    firstName: 'Larry',
+    lastName: 'Lilypad',
+    email: 'larry.lilypad@frogmail.toad',
+    username: 'Larry272',
     hashedPassword: bcrypt.hashSync('password'),
   },
   {
-    firstName: 'Fake',
-    lastName: 'User1',
-    email: 'user1@user.io',
-    username: 'FakeUser1',
-    hashedPassword: bcrypt.hashSync('password2'),
-  },
-  {
-    firstName: 'Fake',
-    lastName: 'User2',
-    email: 'user2@user.io',
-    username: 'FakeUser2',
-    hashedPassword: bcrypt.hashSync('password3'),
+    firstName: 'Clover',
+    lastName: 'Croak',
+    email: 'clover.croak@frogmail.toad',
+    username: 'Clover19',
+    hashedPassword: bcrypt.hashSync('password'),
   },
 ];
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -44,7 +37,7 @@ module.exports = {
     await User.bulkCreate(userSeedData, { validate: true });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *

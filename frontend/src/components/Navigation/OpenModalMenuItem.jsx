@@ -8,14 +8,15 @@ function OpenModalMenuItem({
 }) {
   const { setModalContent, setOnModalClose } = useModal();
 
-  const onClick = () => {
+  const onClick = (e) => {
+    e.preventDefault();
     if (onModalClose) setOnModalClose(onModalClose);
     setModalContent(modalComponent);
     if (typeof onItemClick === "function") onItemClick();
   };
 
   return (
-    <li className="modal-trigger" onClick={onClick}>{itemText}</li>
+    <li className="modal-trigger"><a href="#" onClick={onClick}>{itemText}</a></li>
   );
 }
 

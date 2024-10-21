@@ -7,6 +7,14 @@ ul.nav {
   padding: 10px 20px;
   border-bottom: 2px solid black;
   margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: var(--bg-dark);
+
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+  }
 
   & img {
     max-height: 50px;
@@ -21,22 +29,43 @@ ul.nav {
   & a,
   & button {
     margin: 0 10px;
-    color: var(--red);
   }
 
   & li:has(button) {
     display: flex;
     align-items: center;
-    height: 30px;
   }
 
   & button {
     height: 100%;
-    width: 50px;
   }
-}
 
-.profile-dropdown {
-  display: flex;
-  flex-direction: column;
+  & .profile-button {
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid var(--bg-light);
+    color: var(--bg-light);
+    background: none;
+  }
+
+  & .profile-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin: 0 15px;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: var(--bg-dark);
+    border: 3px outset var(--border-color);
+
+    >li {
+      margin: 2px 0;
+    }
+
+    & .logout-btn {
+      width: 100%;
+    }
+  }
 }

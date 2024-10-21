@@ -37,9 +37,7 @@ function Landing({ manage }) {
                     ? Object.values(spots).map((spot) => spot.ownerId === user.id && (
                       <SpotCard key={spot.id} spot={spot} manage={true} />
                     ))
-                    : loaded
-                      ? <p>You don't have any spots! Click the button above to create a new one.</p>
-                      : <h2>Loading spots...</h2>
+                    : <p>You don't have any spots! Click the button above to create a new one.</p>
                   : <p>Please log in to view and manage your spots.</p>
               }
             </div>
@@ -54,12 +52,12 @@ function Landing({ manage }) {
                     spot={spot}
                   />
                 ))
-                : <h2>Loading spots...</h2>
+                : <h2>No spots found</h2>
             }
           </div>
         )
       ) : (
-        <h1>Loading your spots...</h1>
+        <h1>Loading spots...</h1>
       )}
     </main>
   );

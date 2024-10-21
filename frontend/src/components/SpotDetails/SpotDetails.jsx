@@ -8,16 +8,18 @@ import '../../vlib/proto/date.js';
 import '../../vlib/proto/number.js';
 import ReviewFormModal from "../ReviewFormModal/ReviewFormModal.jsx";
 import OpenModalButton from "../OpenModalButton/OpenModalButton.jsx";
-import DeleteReviewModal from "./DeleteReviewModal.jsx";
-import { getSpotReviewsThunk, spotReviewsSelector } from "../../store/reviews.js";
+import DeleteReviewModal from "../DeleteReviewModal/DeleteReviewModal.jsx";
+import { getSpotReviewsThunk, getUserReviewsThunk, spotReviewsSelector, userReviewsSelector } from "../../store/reviews.js";
 
 function SpotDetails() {
   const { id } = useParams();
   const [spotLoaded, setSpotLoaded] = useState(false);
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
+  const user = useSelector(state => state.session.user);
   const [preview, setPreview] = useState(null);
   const spot = useSelector(state => state.spots[id]);
   const reviews = useSelector(state => spotReviewsSelector(state, id));
+  const userReviews = useSelector(state => userReviewsSelector(state, user?.id))
   const session = useSelector(state => state.session);
   const [displayRating, setDisplayRating] = useState(null);
   const [displayReviews, setDisplayReviews] = useState('- reviews');
@@ -31,7 +33,13 @@ function SpotDetails() {
       if (previewImage) setPreview(previewImage);
     });
 
-    dispatch(getSpotReviewsThunk(id)).then(() => setReviewsLoaded(true));
+    dispatch(getSpotReviewsThunk(id)).then(() => {
+      if (user) {
+        dispatch(getUserReviewsThunk(user?.id)).then(() => setReviewsLoaded(true));
+      } else {
+        setReviewsLoaded(true);
+      }
+    });
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -40,8 +48,8 @@ function SpotDetails() {
     if (!reviews.length) {
       setDisplayRating('New');
     } else {
-      setDisplayRating(reviews.reduce((sum, r) => sum + r.stars, 0)
-        .toDynamic(2, 1)) / reviews.length;
+      setDisplayRating(((reviews.reduce((sum, r) => sum + r.stars, 0)) / reviews.length)
+        .toDynamic(2, 1));
     }
 
     setDisplayReviews(
@@ -85,8 +93,12 @@ function SpotDetails() {
                   <span className="stars">
                     <FaStar />{displayRating}
                   </span>
-                  <span className="dividot">•</span>
-                  <span className="review-count">{displayReviews}</span>
+                  {reviews.length > 0 && (
+                    <>
+                      <span className="dividot"> • </span>
+                      <span className="review-count">{displayReviews}</span>
+                    </>
+                  )}
                 </div>
               </div>
               <button className="reserve-btn">Reserve</button>
@@ -98,59 +110,89 @@ function SpotDetails() {
               <span className="stars lg">
                 <FaStar />{displayRating}
               </span>
-              <span className="dividot lg">•</span>
-              <span className="review-count lg">{displayReviews}</span>
+              {reviews.length > 0 && (
+                <>
+                  <span className="dividot lg"> • </span>
+                  <span className="review-count lg">{displayReviews}</span>
+                </>
+              )}
             </div>
             {reviewsLoaded
-              ? reviews.length
-                ? (
-                  <div className="reviews">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="review">
-                        <div className="review-header">
-                          <h3>{review.User.firstName}</h3>
-                          <span className="date">
-                            {
-                              new Date(review.createdAt).toLocaleString(
-                                'default',
-                                {
-                                  month: 'long',
-                                  year: 'numeric',
-                                }
+              ? (
+                <>
+                  {!userReviews.find((r) => {
+                    return r.userId === user?.id && r.spotId === spot.id
+                  }) && (
+                      <>
+                        {!reviews.length && (
+                          <div className="no-reviews">
+                            <h3>No Reviews (yet)</h3>
+                            {user
+                              ? spot.ownerId !== user.id && (
+                                <p>Be the first to post a review!</p>
+                              ) : (
+                                <p>Sign in and be the first to leave a review!</p>
                               )
                             }
-                          </span>
-                        </div>
-                        <p>{review.review}</p>
-                        {review.User.id === session.user?.id && (
-                          <OpenModalButton
-                            modalComponent={<DeleteReviewModal review={review} />}
-                            buttonText="Delete"
-                          />
+                          </div>
                         )}
-                      </div>
-                    ))}
-                  </div>
-                ) : session.user
-                  ? (
-                    <div className="first-review">
-                      <OpenModalButton
-                        modalComponent={<ReviewFormModal spotId={spot.id} />}
-                        buttonText="Post Your Review"
-                      />
-                      <p>Be the first to post a review!</p>
+                        {(user && spot.ownerId !== user.id) && (
+                          <div className="post-review">
+                            <OpenModalButton
+                              className="post-review"
+                              modalComponent={<ReviewFormModal spotId={spot.id} />}
+                              buttonText="Post Your Review"
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  {reviews.length > 0 && (
+                    <div className="reviews">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="review">
+                          <div className="review-header">
+                            <h3>{review.User.firstName}</h3>
+                            <span className="date">
+                              {
+                                new Date(review.createdAt).toLocaleString(
+                                  'default',
+                                  {
+                                    month: 'long',
+                                    year: 'numeric',
+                                  }
+                                )
+                              }
+                            </span>
+                          </div>
+                          <p>{review.review}</p>
+                          {review.User.id === session.user?.id && (
+                            <>
+                              <OpenModalButton
+                                modalComponent={
+                                  <ReviewFormModal spotId={spot.id} reviewId={review.id} />
+                                }
+                                buttonText="Update"
+                              />
+                              <OpenModalButton
+                                className="delete-btn"
+                                modalComponent={<DeleteReviewModal review={review} />}
+                                buttonText="Delete"
+                              />
+                            </>
+                          )}
+                          <hr />
+                        </div>
+                      ))}
                     </div>
-                  ) : (
-                    <div className="no-reviews">
-                      <h3>No Reviews (yet)</h3>
-                      <p>Sign in and be the first to leave a review!</p>
-                    </div>
-                  ) : (
+                  )}
+                </>
+              ) : (
                 <h2>Loading reviews...</h2>
               )
             }
           </div>
-        </main>
+        </main >
       ) : ( // spot is null
         <h1>Spot not Found</h1>
       ) : ( // isLoaded is false

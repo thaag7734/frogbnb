@@ -7,45 +7,40 @@ const options = { schema: process.env.SCHEMA };
 const seedData = [
   {
     ownerId: 1,
-    address: '7618 Forest Park Dr',
-    city: 'Shawnee',
-    state: 'Kansas',
-    country: 'USA',
+    address: '7618 Ribbit Rd',
+    city: 'Croaksville',
+    state: 'Amphibiana',
+    country: 'The Ribbit Realm',
     lat: '38.992159',
     lng: '-94.776287',
-    name: 'Fake Spot 1',
-    description: 'Fake Spot',
-    price: 325,
-  },
-  {
-    ownerId: 1,
-    address: '3505 Spenard Rd',
-    city: 'Anchorage',
-    state: 'Alaska',
-    country: 'USA',
-    lat: '61.188339',
-    lng: '-149.908256',
-    name: 'Fake Spot 2',
-    description: 'Fake Spot',
-    price: 250,
+    name: 'Salamander Marsh',
+    description:
+      'ribbit Gorgeous spot in Salamander Marsh, known for its lush greenery and many'
+      + ' varieties of cattails and wildflowers. Every night, the local population of'
+      + ' bioluminescent salamanders gather in the marsh - ribbit - making for an'
+      + ' enchanting evening glow.',
+    price: 220,
   },
   {
     ownerId: 2,
-    address: '38199 Whaleys Rd',
-    city: 'Delmar',
-    state: 'Delaware',
-    country: 'USA',
-    lat: '38.4589',
-    lng: '-75.427414',
-    name: 'Fake Spot 3',
-    description: 'Fake Spot',
-    price: 95,
+    address: '1021 Toadstool Terrace',
+    city: 'Hopsburg',
+    state: 'Toadtopia',
+    country: 'The Ribbit Realm',
+    lat: '61.188339',
+    lng: '-149.908256',
+    name: 'Frog Hollow',
+    description:
+      'A quaint spot in a small pond with plenty of activity nearby. ribbit.'
+      + ' Great spot for food lovers, as Frog Hollow is famous for its'
+      + ' large variety of exotic and flavorful bugs. ribbit',
+    price: 75,
   },
 ]
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -58,7 +53,7 @@ module.exports = {
     await Spot.bulkCreate(seedData);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *

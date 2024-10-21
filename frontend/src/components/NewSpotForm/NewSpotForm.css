@@ -1,9 +1,15 @@
 .new-spot-form {
   margin: 15px auto;
-  width: 25%;
+  width: 460px;
+
+  @media screen and (max-width: 500px) {
+    width: 70%;
+  }
 
   & hr {
     margin: 5px 0;
+    border-color: var(--bg-light);
+    filter: brightness(60%);
   }
 
   & input,
@@ -18,17 +24,13 @@
     filter: brightness(70%);
   }
 
-  & .input-group>label:first-child::before {
-    content: '';
-  }
-
   & .input-group>label::after,
-  & .input-group>label::before {
+  & .input-group>label:not(:first-child)::before {
     content: '\A';
     white-space: pre;
   }
 
-  .loc-section {
+  & .loc-section {
     grid-area: loc;
     display: grid;
     grid-template:
@@ -82,7 +84,7 @@
     }
   }
 
-  .desc-section {
+  & .desc-section {
     width: 100%;
 
     >textarea {
@@ -90,7 +92,7 @@
     }
   }
 
-  .price-section {
+  & .price-section {
     >.input-group {
       display: flex;
       align-items: center;

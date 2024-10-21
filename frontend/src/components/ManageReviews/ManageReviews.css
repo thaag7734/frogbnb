@@ -1,0 +1,15 @@
+.manage-reviews {
+  margin: 5px 20px;
+
+  >.review {
+    >p {
+      margin: 10px 0;
+    }
+
+    & button {
+      &:first-of-type {
+        margin-right: 10px;
+      }
+    }
+  }
+}

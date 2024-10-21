@@ -44,14 +44,12 @@ function ProfileButton({ user }) {
   return (
     <>
       <button className="profile-button" onClick={handleProfileButtonClick}>
-        <RxHamburgerMenu />
-        <IoPersonCircleSharp />
+        <span><RxHamburgerMenu /> <IoPersonCircleSharp /></span>
       </button>
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>{user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
+            <li>Hello, {user.firstName}</li>
             <li>{user.email}</li>
             <li>
               <Link to="/spots/manage">Manage Spots</Link>
@@ -60,7 +58,7 @@ function ProfileButton({ user }) {
               <Link to="/reviews/manage">Manage Reviews</Link>
             </li>
             <li>
-              <button onClick={logout}>Log Out</button>
+              <button className="logout-btn" onClick={logout}>Log Out</button>
             </li>
           </>
         ) : (

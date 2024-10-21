@@ -18,7 +18,7 @@
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 ul {
@@ -27,7 +27,7 @@ ul {
 
 a {
   text-decoration: none;
-  color: inherit;
+  color: var(--green);
 
   &:hover {
     filter: brightness(50%);
@@ -53,14 +53,40 @@ button {
   transition: filter 0.2s;
 
   &:hover {
-    filter: brightness(0.7);
+    filter: brightness(70%);
   }
 
-  &:active {
-    filter: brightness(0.4);
+  &:active,
+  &:disabled {
+    filter: brightness(40%);
   }
 }
 
 .error {
   color: var(--red);
+}
+
+.money {
+  font-weight: bold;
+}
+
+input,
+textarea {
+  margin: 8px 0;
+  padding: 3px 5px;
+  width: 100%;
+  border-radius: 0;
+  color: inherit;
+  background-color: var(--bg-dark);
+  border: 2px inset var(--border-color);
+  filter: brightness(70%);
+}
+
+.delete-btn {
+  background-color: var(--red);
+  border-color: var(--red-dark);
+}
+
+hr {
+  margin: 5px 0;
 }

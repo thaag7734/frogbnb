@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useModal } from "../../context/Modal";
-import { allReviewsSelector, createReviewThunk, updateReviewThunk } from "../../store/reviews";
+import { createReviewThunk, spotReviewsSelector, updateReviewThunk } from "../../store/reviews";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import ErrorSpan from "../ErrorSpan/ErrorSpan";
 import { useSelector } from "react-redux";
+import './ReviewFormModal.css';
 
 function ReviewFormModal({ spotId, reviewId }) {
-  const reviews = useSelector(allReviewsSelector);
+  const reviews = useSelector(state => spotReviewsSelector(state, spotId));
   const spots = useSelector(state => state.spots);
   const [stars, setStars] = useState([false, false, false, false, false]);
   const [hoveredStar, setHoveredStar] = useState(null);
@@ -39,30 +40,31 @@ function ReviewFormModal({ spotId, reviewId }) {
 
   useEffect(() => {
     const thisReview = reviews.find((r) => r.id === reviewId);
-    console.log('thisReview ===>', thisReview);
 
     setSpot(Object.values(spots).find((s) => s.id === spotId));
 
     setReview(thisReview?.review ?? '');
-    selectStar(thisReview?.stars ?? 0 - 1);
-  }, [reviews, spots])
+    selectStar((thisReview?.stars ?? 0) - 1);
+  }, [reviews, spots]);
 
-  useEffect(() => { console.log('AAAAAAAA') }, [errors, stars]);
+  useEffect(() => { }, [errors, stars]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrors({});
+    const thisReview = reviews.find((r) => r.id === reviewId);
 
     // this is deeply cursed but it worked fine (not fine) for updating spots
     let thunk;
-    if (reviewId) {
-      thunk = dispatch(updateReviewThunk({ review, stars: getStarRating() }));
+    if (thisReview) {
+      thunk = dispatch(updateReviewThunk({ ...thisReview, review, stars: getStarRating() }));
     } else {
       thunk = dispatch(createReviewThunk(spotId, { review, stars: getStarRating() }))
     }
 
     thunk.then(closeModal)
-      .catch((res) => res.json().then((body) => {
+      .catch((body) => {
+        console.log(body);
         const backendErrors = {};
 
         if (body.errors) {
@@ -75,11 +77,11 @@ function ReviewFormModal({ spotId, reviewId }) {
         console.log('backendErrors ===>', backendErrors);
 
         setErrors(backendErrors);
-      }));
+      });
   };
 
   return spot && (
-    <div className="review-modal">
+    <div className="review-modal modal-content">
       <h1>How was your stay at {spot.name}?</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="review" className="hidden">Review</label>

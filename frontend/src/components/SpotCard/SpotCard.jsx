@@ -35,7 +35,7 @@ function SpotCard({ spot, manage }) {
   useEffect(() => { dispatch(getSpotReviewsThunk(spot.id)) }, []);
 
   return (
-    <div className="spot-card" onClick={navToSpot}>
+    <div className="spot-card" onClick={navToSpot} title={spot.name}>
       <div className="preview">
         <img src={spot.previewImage} alt={spot.name} />
       </div>
@@ -60,6 +60,7 @@ function SpotCard({ spot, manage }) {
               <button
                 onClick={handleUpdate}>Update</button>
               <OpenModalButton
+                className="delete-btn"
                 modalComponent={<DeleteSpotModal spotId={spot.id} />}
                 buttonText="Delete"
               />
