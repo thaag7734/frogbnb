@@ -100,7 +100,10 @@ function SpotDetails() {
                   )}
                 </div>
               </div>
-              <button className="reserve-btn">Reserve</button>
+              <button
+                className="reserve-btn"
+                onClick={() => alert('Feature coming soon!')}
+              >Reserve</button>
             </div>
           </div>
           <hr />
