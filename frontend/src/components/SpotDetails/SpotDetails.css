@@ -56,6 +56,11 @@
     justify-content: space-between;
     margin-bottom: 15px;
 
+    @media screen and (max-width: 680px) {
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+    }
+
     >.desc {
       margin-right: 10px;
 
@@ -65,7 +70,7 @@
     }
 
     >.reserve-card {
-      border: 3px outset var(--border-color);
+      border: 3px solid var(--border-color);
       border-radius: 15px;
       padding: 20px;
       min-width: 345px;
@@ -80,12 +85,9 @@
       }
 
       @media screen and (max-width: 680px) {
-        font-size: 12px;
-        padding: 10px;
-      }
-
-      @media screen and (max-width: 600px) {
-        min-width: 185px;
+        width: 100%;
+        font-size: 16px;
+        margin-bottom: 10px;
       }
 
       >.summary {

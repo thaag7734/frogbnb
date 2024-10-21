@@ -23,6 +23,6 @@
   width: 385px;
   background-color: var(--bg-dark);
   padding: 15px;
-  border: 4px outset var(--border-color);
+  border: 4px solid var(--border-color);
   border-radius: 15px;
 }

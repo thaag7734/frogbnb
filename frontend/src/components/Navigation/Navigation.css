@@ -58,7 +58,7 @@ ul.nav {
     padding: 10px;
     border-radius: 15px;
     background-color: var(--bg-dark);
-    border: 3px outset var(--border-color);
+    border: 3px solid var(--border-color);
 
     >li {
       margin: 2px 0;
