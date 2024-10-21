@@ -54,7 +54,7 @@ function SignupFormModal() {
           const data = await res.json();
 
           const errors = Object.fromEntries(Object.entries(data.errors).map(([err, msg]) => {
-            return [err, <ErrorSpan msg={msg} />];
+            return [err, <ErrorSpan key={err} msg={msg} />];
           }));
 
           setErrors(errors);
