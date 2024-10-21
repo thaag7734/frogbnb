@@ -6,14 +6,14 @@ const seedData = [
   {
     spotId: 2,
     userId: 1,
-    review: 'Lorem ipsum odor amet, consectetuer adipiscing elit. Nec egestas cras taciti aenean ligula ex turpis amet vulputate sem sollicitudin scelerisque justo pretium nibh scelerisque fermentum lectus arcu.',
+    review: 'Great spot ribbit! I love the bugs here and the lilypads are very comfy.',
     stars: 4
   }
 ];
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -26,7 +26,7 @@ module.exports = {
     await Review.bulkCreate(seedData);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *

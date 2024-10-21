@@ -9,6 +9,26 @@ const seedData = [
     preview: true,
   },
   {
+    spotId: 1,
+    url: 'https://i.ibb.co/FJyk92c/lp9.jpg',
+    preview: false,
+  },
+  {
+    spotId: 1,
+    url: 'https://i.ibb.co/R2P3g2C/lp8.jpg',
+    preview: false,
+  },
+  {
+    spotId: 1,
+    url: 'https://i.ibb.co/myHLQM7/lp7.jpg',
+    preview: false,
+  },
+  {
+    spotId: 1,
+    url: 'https://i.ibb.co/0rnWFdc/lp6.jpg',
+    preview: false,
+  },
+  {
     spotId: 2,
     url: 'https://i.ibb.co/PZqZf2M/lp1.jpg',
     preview: true,
