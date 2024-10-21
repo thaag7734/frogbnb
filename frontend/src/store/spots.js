@@ -224,7 +224,7 @@ export const getUserSpotsThunk = () => async (dispatch) => {
     return body.Spots;
   }
 
-  return body;
+  return res.json();
 }
 
 /**
@@ -335,18 +335,9 @@ export const deleteSpotImageThunk = (image) => async (dispatch) => {
 
   if (res.status >= 400) return body;
 
-  dispatch(deleteSpotImage(id));
+  dispatch(deleteSpotImage(image.id));
 
   return body;
-}
-
-/**
- * Calculates the average rating given an array of Reviews
- * @param { Review[] } reviews An array of Reviews
- * @returns { number }
- */
-const calculateAvgStarRating = (reviews) => {
-  return reviews.reduce((sum, { stars }) => sum + stars, 0);
 }
 
 /**

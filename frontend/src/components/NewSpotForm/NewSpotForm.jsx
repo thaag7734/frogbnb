@@ -233,7 +233,7 @@ function NewSpotForm() {
           if (images[idx].id) {
             dispatch(deleteSpotImageThunk(images[idx]))
               .catch((eRes) => handleImgFailure(eRes, idx));
-          };
+          }
 
           continue;
         }

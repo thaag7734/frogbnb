@@ -37,7 +37,7 @@ function Landing({ manage }) {
                     ? Object.values(spots).map((spot) => spot.ownerId === user.id && (
                       <SpotCard key={spot.id} spot={spot} manage={true} />
                     ))
-                    : <p>You don't have any spots! Click the button above to create a new one.</p>
+                    : <p>You don&apos;t have any spots! Click the button above to create a new one.</p>
                   : <p>Please log in to view and manage your spots.</p>
               }
             </div>
