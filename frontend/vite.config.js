@@ -19,5 +19,12 @@ export default defineConfig(({ mode }) => ({
       '/api': 'http://localhost:8000',
     },
     host: '0.0.0.0',
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      }
+    }
   }
 }));
