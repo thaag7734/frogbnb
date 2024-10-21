@@ -63,7 +63,6 @@ function SpotDetails() {
     ? spot && Object.entries(spot).length
       ? (
         <main className="spot-details">
-          {console.log(spot)}
           <h1>{spot.name}</h1>
           <span className="location">{spot.city}, {spot.state}, {spot.country}</span>
           <div className="spot-images">

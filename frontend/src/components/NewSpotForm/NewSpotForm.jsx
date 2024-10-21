@@ -44,7 +44,6 @@ function NewSpotForm() {
   const validate = () => {
     const validationErrors = { images: [] };
     runningErrors = { images: [] };
-    console.log('images in validate ===>', images);
 
     const imageUrlSuffixes = [
       //'.apng',
@@ -239,7 +238,6 @@ function NewSpotForm() {
           continue;
         }
 
-        console.log(`images[${idx}].id before pushing promise ===>`, images[idx].id);
         promises.push(
           images[idx].id
             ? dispatch(updateSpotImageThunk(images[idx]))
@@ -262,7 +260,6 @@ function NewSpotForm() {
         }
       });
     }).catch((eBody) => {
-      console.log(eBody);
       for (const [err, msg] of Object.entries(eBody.errors)) {
         runningErrors[err] = <ErrorSpan msg={msg} />;
       }

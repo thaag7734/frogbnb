@@ -145,8 +145,6 @@ export const createReviewThunk = (spotId, review) => async (dispatch) => {
 
   if (body.errors) return body;
 
-  console.log('body in thunk ===>', body);
-
   dispatch(createReview(body));
 
   return body;
@@ -157,7 +155,6 @@ export const createReviewThunk = (spotId, review) => async (dispatch) => {
  * @param { Review } review The updated Review object to persist in the db
  */
 export const updateReviewThunk = (review) => async (dispatch) => {
-  console.log('review in URT ===>', review);
   const res = await csrfFetch(`/api/reviews/${review.id}`, {
     method: 'PUT',
     body: JSON.stringify(review),

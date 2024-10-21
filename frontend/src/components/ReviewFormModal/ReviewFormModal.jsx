@@ -34,7 +34,6 @@ function ReviewFormModal({ spotId, reviewId }) {
       starVal = stars[starCount];
     }
 
-    console.log('starCount ===>', starCount);
     return starCount;
   }
 
@@ -64,7 +63,6 @@ function ReviewFormModal({ spotId, reviewId }) {
 
     thunk.then(closeModal)
       .catch((body) => {
-        console.log(body);
         const backendErrors = {};
 
         if (body.errors) {
@@ -72,9 +70,6 @@ function ReviewFormModal({ spotId, reviewId }) {
             backendErrors[err] = <ErrorSpan msg={msg} />;
           });
         }
-
-        console.log('res.errors ===>', body.errors);
-        console.log('backendErrors ===>', backendErrors);
 
         setErrors(backendErrors);
       });
