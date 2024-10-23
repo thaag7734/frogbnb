@@ -4,7 +4,7 @@ let options = { schema: process.env.SCHEMA };
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.addColumn(
       { tableName: 'Users', schema: options.schema },
       'firstName',
@@ -26,7 +26,7 @@ module.exports = {
     );
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.removeColumn(
       { tableName: 'Users', schema: options.schema },
       'firstName'

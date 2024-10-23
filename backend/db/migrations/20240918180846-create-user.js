@@ -16,13 +16,13 @@ module.exports = {
         type: Sequelize.STRING(30),
         allowNull: false,
         unique: true,
-        validate: {len: [1,30]}
+        validate: { len: [1, 30] }
       },
       email: {
         type: Sequelize.STRING(256),
         allowNull: false,
         unique: true,
-        validate: {len: [1,256]}
+        validate: { len: [1, 256] }
       },
       hashedPassword: {
         type: Sequelize.STRING.BINARY,
@@ -41,8 +41,9 @@ module.exports = {
     }, options);
   },
   async down(queryInterface, Sequelize) {
-    //options.tableName = "Users";
-    //return queryInterface.dropTable(options);
-    return queryInterface.dropTable('Users', options);
+    options.tableName = "Users";
+    return queryInterface.dropTable(options);
+    //console.log('SCHEMA ===>', options.schema);
+    //return queryInterface.dropTable('Users', options);
   }
 };
